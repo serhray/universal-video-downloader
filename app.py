@@ -16,7 +16,8 @@ from instagram_downloader import InstagramDownloader
 from facebook_downloader import FacebookDownloader
 from tiktok_downloader import TikTokDownloader
 from twitch_downloader import TwitchDownloader
-from youtube_vercel import YouTubeVercel  # Importar a solução Vercel para YouTube
+from youtube_vercel import YouTubeVercel, TwitchVercel  # Importar as soluções Vercel para YouTube e Twitch
+# TODO: Adicionar TwitchVercel quando a classe for criada no youtube_vercel.py
 
 app = Flask(__name__)
 
@@ -33,6 +34,7 @@ youtube_dl = YouTubeDownloader()
 youtube_anti_bot = YouTubeAntiBot()  # Inicializar a solução anti-bot do YouTube
 youtube_ultimate = YouTubeUltimate()  # Inicializar a solução extrema do YouTube
 youtube_vercel = YouTubeVercel()  # Inicializar a solução Vercel para YouTube
+twitch_vercel = TwitchVercel()  # Usar a solução Vercel para Twitch
 instagram_dl = InstagramDownloader()
 facebook_dl = FacebookDownloader()
 tiktok_dl = TikTokDownloader()
@@ -228,7 +230,7 @@ def download_video():
                     'Instagram': instagram_dl,
                     'Facebook': facebook_dl,
                     'TikTok': tiktok_dl,
-                    'Twitch': twitch_dl
+                    'Twitch': twitch_vercel  # Usar a solução Vercel para Twitch
                 }
                 
                 downloader = downloader_map.get(platform)
@@ -253,8 +255,8 @@ def download_video():
                     elif platform == 'TikTok':
                         success = downloader.download_video(url, temp_dir, progress_callback)
                     elif platform == 'Twitch':
-                        # CORRIGIR: Adicionar chamada para Twitch
-                        success = downloader.download_segment(url, temp_dir, progress_callback)
+                        # CORRIGIR: Usar método correto para Twitch
+                        success = downloader.download_video(url, temp_dir, progress_callback)
                     else:
                         success = False
                 

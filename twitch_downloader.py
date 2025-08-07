@@ -373,3 +373,71 @@ class TwitchDownloader:
             list: Lista de VODs em cache
         """
         return self.vods_cache
+    
+    def download_video(self, url, output_path, progress_hook=None):
+        """
+        Baixar vídeo/clip completo da Twitch (método simples)
+        
+        Args:
+            url (str): URL do vídeo/clip da Twitch
+            output_path (str): Caminho para salvar
+            progress_hook (callable): Função de callback para progresso
+            
+        Returns:
+            bool: True se sucesso, False caso contrário
+        """
+        try:
+            # Criar diretório se não existir
+            Path(output_path).mkdir(parents=True, exist_ok=True)
+            
+            # Configurar nome do arquivo de saída
+            output_template = os.path.join(output_path, '%(uploader)s_%(title)s.%(ext)s')
+            
+            print(f"🎮 Iniciando download da Twitch: {url}")
+            
+            # Configurações otimizadas do yt-dlp para Twitch
+            ydl_opts = {
+                'format': 'best[ext=mp4]/best',  # Preferir MP4
+                'outtmpl': output_template,
+                'writeinfojson': False,
+                'writesubtitles': False,
+                'writeautomaticsub': False,
+                'ignoreerrors': False,
+                'no_warnings': False,
+                'embed_subs': False,
+                
+                # Configurações de rede robustas para Twitch
+                'socket_timeout': 60,
+                'retries': 8,
+                'fragment_retries': 8,
+                'retry_sleep_functions': {
+                    'http': lambda n: min(4 ** n, 60),
+                    'fragment': lambda n: min(4 ** n, 60),
+                },
+                
+                # Headers para evitar bloqueios
+                'http_headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Accept-Encoding': 'gzip, deflate',
+                    'DNT': '1',
+                    'Connection': 'keep-alive',
+                },
+            }
+            
+            # Adicionar hook de progresso se fornecido
+            if progress_hook:
+                ydl_opts['progress_hooks'] = [progress_hook]
+            
+            # Executar download
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                print(f"🚀 Baixando vídeo completo da Twitch...")
+                ydl.download([url])
+                
+            print("✅ Download da Twitch concluído com sucesso!")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Erro no download da Twitch: {e}")
+            return False
