@@ -270,13 +270,31 @@ def download_video():
                     elif platform == 'Twitch':
                         # ESTRATÉGIA DUPLA: TwitchVercel + Fallback
                         print(f"🎮 Tentando download da Twitch com TwitchVercel...")
-                        success = downloader.download_video(url, temp_dir, progress_callback)
+                        print(f"🔍 DEBUG - Downloader usado: {type(downloader).__name__}")
+                        print(f"🔍 DEBUG - Método disponível: {hasattr(downloader, 'download_video')}")
+                        
+                        # Verificar se o método existe antes de chamar
+                        if hasattr(downloader, 'download_video'):
+                            print(f"✅ DEBUG - Método download_video encontrado, chamando...")
+                            success = downloader.download_video(url, temp_dir, progress_callback)
+                            print(f"🔍 DEBUG - Resultado do download: {success}")
+                        else:
+                            print(f"❌ DEBUG - Método download_video NÃO encontrado!")
+                            success = False
                         
                         # Se falhar no Vercel, tentar com TwitchDownloader local
                         if not success and os.environ.get('VERCEL') == '1':
                             print(f"⚠️ TwitchVercel falhou, tentando fallback com TwitchDownloader...")
                             fallback_downloader = twitch_dl  # TwitchDownloader local
-                            success = fallback_downloader.download_video(url, temp_dir, progress_callback)
+                            print(f"🔍 DEBUG - Fallback downloader: {type(fallback_downloader).__name__}")
+                            print(f"🔍 DEBUG - Fallback método disponível: {hasattr(fallback_downloader, 'download_video')}")
+                            
+                            if hasattr(fallback_downloader, 'download_video'):
+                                success = fallback_downloader.download_video(url, temp_dir, progress_callback)
+                                print(f"🔍 DEBUG - Resultado do fallback: {success}")
+                            else:
+                                print(f"❌ DEBUG - Fallback também não tem método download_video!")
+                                success = False
                     else:
                         success = False
                 
