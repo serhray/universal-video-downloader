@@ -71,9 +71,9 @@ class TikTokDownloader:
             # Configurar nome do arquivo de saída
             output_template = os.path.join(output_path, '%(uploader)s_%(title)s.%(ext)s')
             
-            # Configurações do yt-dlp para TikTok - FORMATO ORIGINAL
+            # Configurações do yt-dlp para TikTok - CODEC COMPATÍVEL
             ydl_opts = {
-                'format': 'best',  # Sempre o melhor formato disponível
+                'format': 'best[vcodec^=avc1]/best[vcodec^=h264]/best[ext=mp4]/best',  # Priorizar H.264/MP4
                 'outtmpl': output_template,
                 'writeinfojson': False,
                 'writesubtitles': False,
@@ -81,6 +81,15 @@ class TikTokDownloader:
                 'ignoreerrors': False,
                 'no_warnings': False,
                 'embed_subs': False,
+                'postprocessors': [{
+                    'key': 'FFmpegVideoConvertor',
+                    'preferedformat': 'mp4',
+                }],
+                'postprocessor_args': [
+                    '-c:v', 'libx264',  # Forçar codec H.264
+                    '-c:a', 'aac',      # Forçar áudio AAC
+                    '-preset', 'fast',   # Conversão rápida
+                ],
             }
             
             # Adicionar hook de progresso se fornecido
