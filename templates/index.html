@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Video Downloader</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS with dynamic cache busting -->
+    <link href="{{ url_for('static', filename='style.css') }}?v={{ cache_bust }}" rel="stylesheet">
+    
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="display-4 fw-bold mb-2">
+                <i class="bi bi-download"></i> Universal Video Downloader
+            </h1>
+            <p class="lead">Baixe vídeos do YouTube, Instagram, Facebook, TikTok e Twitch</p>
+        </div>
+
+        <!-- Platform Selection -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-gear-fill"></i> Selecionar Plataforma</h5>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <select class="form-select" id="platformSelect">
+                            <option value="YouTube">📺 YouTube</option>
+                            <option value="Instagram">📷 Instagram</option>
+                            <option value="Facebook">📘 Facebook</option>
+                            <option value="TikTok">🎵 TikTok</option>
+                            <option value="Twitch">🎮 Twitch</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <div id="platformIndicator" class="platform-indicator platform-youtube">
+                            📺 YouTube: Opções de qualidade e formato disponíveis
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Standard Interface (YouTube, Instagram, Facebook, TikTok) -->
+        <div id="standardInterface" class="standard-interface">
+            <!-- URL Input -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-link-45deg"></i> URL do Vídeo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <input type="url" class="form-control" id="videoUrl" 
+                                   placeholder="Cole aqui a URL do vídeo...">
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-light w-100" id="validateBtn">
+                                <i class="bi bi-check-circle"></i> Validar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options (YouTube only) -->
+            <div class="card mb-4" id="optionsCard">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-sliders"></i> Opções de Download</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Qualidade:</label>
+                            <select class="form-select" id="qualitySelect">
+                                <option value="2160p">2160p (4K)</option>
+                                <option value="1440p">1440p (2K)</option>
+                                <option value="1080p">1080p (Full HD)</option>
+                                <option value="720p">720p (HD)</option>
+                                <option value="480p">480p</option>
+                                <option value="360p">360p</option>
+                                <option value="best" selected>Melhor Disponível</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Formato:</label>
+                            <select class="form-select" id="formatSelect">
+                                <option value="mp4" selected>MP4 (Vídeo)</option>
+                                <option value="webm">WebM (Vídeo)</option>
+                                <option value="mkv">MKV (Vídeo)</option>
+                                <option value="mp3">MP3 (Áudio)</option>
+                                <option value="m4a">M4A (Áudio)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <button class="btn btn-primary btn-lg me-3" id="downloadBtn">
+                        <i class="bi bi-download"></i> Baixar Vídeo
+                    </button>
+                    <button class="btn btn-outline-light" id="infoBtn">
+                        <i class="bi bi-info-circle"></i> Info do Vídeo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Twitch Interface -->
+        <div id="twitchInterface" class="twitch-interface">
+            <!-- VOD Search -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-search"></i> Buscar VODs do Twitch</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label">Nome do Streamer:</label>
+                            <input type="text" class="form-control" id="twitchUsername" 
+                                   placeholder="Ex: ninja, shroud, pokimane">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Quantidade:</label>
+                            <select class="form-select" id="vodCount">
+                                <option value="5">5 VODs</option>
+                                <option value="10" selected>10 VODs</option>
+                                <option value="15">15 VODs</option>
+                                <option value="20">20 VODs</option>
+                                <option value="25">25 VODs</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100" id="searchVodsBtn">
+                                <i class="bi bi-search"></i> Buscar VODs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VODs List -->
+            <div class="card mb-4" id="vodsListCard" style="display: none;">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-list-ul"></i> VODs Encontrados</h5>
+                </div>
+                <div class="card-body">
+                    <div id="vodsList"></div>
+                </div>
+            </div>
+
+            <!-- VOD Download Configuration -->
+            <div class="card mb-4" id="vodConfigCard" style="display: none;">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-gear"></i> Configurar Download</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label">Nome do Arquivo (opcional):</label>
+                            <input type="text" class="form-control" id="customName" 
+                                   placeholder="Ex: MelhorMomento_Ninja">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">Tempo de Início:</label>
+                            <input type="text" class="form-control" id="startTime" 
+                                   placeholder="00:30" pattern="[0-9]{1,2}:[0-5][0-9](:[0-5][0-9])?">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tempo de Fim:</label>
+                            <input type="text" class="form-control" id="endTime" 
+                                   placeholder="05:30" pattern="[0-9]{1,2}:[0-5][0-9](:[0-5][0-9])?">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-success w-100" id="downloadSegmentBtn">
+                                <i class="bi bi-download"></i> Baixar Segmento
+                            </button>
+                        </div>
+                    </div>
+                    <small class="text-muted">Formato de tempo: MM:SS ou HH:MM:SS</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="card mb-4" id="progressCard" style="display: none;">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-arrow-down-circle"></i> Progresso do Download</h5>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3">
+                    <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%">
+                        <span id="progressText">0%</span>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-success" id="downloadFileBtn" style="display: none;">
+                        <i class="bi bi-download"></i> Baixar Arquivo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Info -->
+        <div class="card mb-4" id="videoInfoCard" style="display: none;">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informações do Vídeo</h5>
+            </div>
+            <div class="card-body" id="videoInfoContent">
+                <!-- Video info will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript with dynamic cache busting -->
+    <script src="{{ url_for('static', filename='app.js') }}?v={{ cache_bust }}"></script>
+
+    <!-- Banner de Cookies LGPD -->
+    {% include 'cookie-banner.html' %}
+
+    <!-- Rodapé Legal -->
+    <footer class="mt-5 py-4 bg-dark text-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Universal Video Downloader</h6>
+                    <p class="small mb-0">Ferramenta gratuita para download de vídeos de múltiplas plataformas.</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Links Legais</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="{{ url_for('privacy_policy') }}" class="text-light">Política de Privacidade</a></li>
+                        <li><a href="{{ url_for('terms_of_service') }}" class="text-light">Termos de Uso</a></li>
+                        <li><a href="javascript:void(0)" onclick="showCookieSettings()" class="text-light">Configurações de Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small mb-0">&copy; {{ current_date or "2025" }} Universal Video Downloader. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

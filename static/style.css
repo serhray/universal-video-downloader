@@ -1,0 +1,970 @@
+/* Universal Video Downloader Web App - Custom Styles */
+
+/* Dark theme variables */
+:root {
+    --bg-primary: #2a2a2a;
+    --bg-secondary: #3a3a3a;
+    --bg-tertiary: #4a4a4a;
+    --text-primary: #ffffff;
+    --text-secondary: #d0d0d0;
+    --border-color: #555555;
+    --accent-primary: #007bff;
+    --accent-success: #28a745;
+    --accent-danger: #dc3545;
+    --accent-warning: #ffc107;
+    --accent-info: #17a2b8;
+    
+    /* Platform specific colors - REFORÇADAS */
+    --youtube-primary: #ff1744;
+    --youtube-secondary: #ff5252;
+    --youtube-bg: rgba(255, 23, 68, 0.15);
+    
+    --instagram-primary: #e91e63;
+    --instagram-secondary: #ff6b35;
+    --instagram-bg: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    
+    --facebook-primary: #1976d2;
+    --facebook-secondary: #42a5f5;
+    --facebook-bg: rgba(25, 118, 210, 0.15);
+    
+    --tiktok-primary: #ff1744;
+    --tiktok-secondary: #00e5ff;
+    --tiktok-bg: linear-gradient(45deg, #ff1744 0%, #00e5ff 100%);
+    
+    --twitch-primary: #9c27b0;
+    --twitch-secondary: #7b1fa2;
+    --twitch-bg: rgba(156, 39, 176, 0.15);
+}
+
+/* Base styles */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header styles */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px 0;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.header h1 {
+    color: var(--accent-primary);
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+/* Platform-specific header themes */
+body.theme-youtube .header {
+    border-bottom-color: var(--youtube-primary);
+    background: linear-gradient(135deg, rgba(255, 23, 68, 0.05) 0%, transparent 100%);
+}
+
+body.theme-youtube .header h1 {
+    color: var(--youtube-primary);
+    text-shadow: 0 0 20px rgba(255, 23, 68, 0.3);
+}
+
+body.theme-instagram .header {
+    border-bottom: 2px solid var(--instagram-primary);
+    background: linear-gradient(135deg, rgba(233, 30, 99, 0.05) 0%, rgba(255, 107, 53, 0.05) 100%);
+}
+
+body.theme-instagram .header h1 {
+    background: var(--instagram-bg);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+body.theme-facebook .header {
+    border-bottom-color: var(--facebook-primary);
+    background: linear-gradient(135deg, rgba(25, 118, 210, 0.05) 0%, transparent 100%);
+}
+
+body.theme-facebook .header h1 {
+    color: var(--facebook-primary);
+    text-shadow: 0 0 20px rgba(25, 118, 210, 0.3);
+}
+
+body.theme-tiktok .header {
+    border-bottom: 2px solid var(--tiktok-primary);
+    background: linear-gradient(135deg, rgba(255, 23, 68, 0.05) 0%, rgba(0, 229, 255, 0.05) 100%);
+}
+
+body.theme-tiktok .header h1 {
+    background: var(--tiktok-bg);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+body.theme-twitch .header {
+    border-bottom-color: var(--twitch-primary);
+    background: linear-gradient(135deg, rgba(156, 39, 176, 0.05) 0%, transparent 100%);
+}
+
+body.theme-twitch .header h1 {
+    color: var(--twitch-primary);
+    text-shadow: 0 0 20px rgba(156, 39, 176, 0.3);
+}
+
+/* Card styles */
+.card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 12px 12px 0 0 !important;
+    padding: 15px 20px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-title {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+/* Platform-specific card themes */
+body.theme-youtube .card {
+    border-color: rgba(255, 23, 68, 0.3);
+    box-shadow: 0 4px 20px rgba(255, 23, 68, 0.1);
+}
+
+body.theme-youtube .card-header {
+    background: linear-gradient(135deg, rgba(255, 23, 68, 0.1) 0%, var(--bg-tertiary) 100%);
+    border-bottom-color: rgba(255, 23, 68, 0.3);
+}
+
+body.theme-instagram .card {
+    border: 1px solid rgba(233, 30, 99, 0.3);
+    box-shadow: 0 4px 20px rgba(233, 30, 99, 0.1);
+}
+
+body.theme-instagram .card-header {
+    background: linear-gradient(135deg, rgba(233, 30, 99, 0.1) 0%, rgba(255, 107, 53, 0.05) 50%, var(--bg-tertiary) 100%);
+    border-bottom: 1px solid rgba(233, 30, 99, 0.3);
+}
+
+body.theme-facebook .card {
+    border-color: rgba(25, 118, 210, 0.3);
+    box-shadow: 0 4px 20px rgba(25, 118, 210, 0.1);
+}
+
+body.theme-facebook .card-header {
+    background: linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, var(--bg-tertiary) 100%);
+    border-bottom-color: rgba(25, 118, 210, 0.3);
+}
+
+body.theme-tiktok .card {
+    border: 1px solid rgba(255, 23, 68, 0.3);
+    box-shadow: 0 4px 20px rgba(255, 23, 68, 0.1);
+}
+
+body.theme-tiktok .card-header {
+    background: linear-gradient(135deg, rgba(255, 23, 68, 0.1) 0%, rgba(0, 229, 255, 0.05) 50%, var(--bg-tertiary) 100%);
+    border-bottom: 1px solid rgba(255, 23, 68, 0.3);
+}
+
+body.theme-twitch .card {
+    border-color: rgba(156, 39, 176, 0.3);
+    box-shadow: 0 4px 20px rgba(156, 39, 176, 0.1);
+}
+
+body.theme-twitch .card-header {
+    background: linear-gradient(135deg, rgba(156, 39, 176, 0.1) 0%, var(--bg-tertiary) 100%);
+    border-bottom-color: rgba(156, 39, 176, 0.3);
+}
+
+/* Platform indicator styles */
+.platform-indicator {
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 20px;
+    border-left: 4px solid;
+}
+
+.platform-youtube {
+    background: linear-gradient(135deg, rgba(255, 23, 68, 0.15) 0%, rgba(255, 82, 82, 0.1) 100%);
+    border-left-color: var(--youtube-primary);
+    color: #ff6b6b;
+    box-shadow: 0 4px 15px rgba(255, 23, 68, 0.2);
+}
+
+.platform-instagram {
+    background: linear-gradient(135deg, rgba(233, 30, 99, 0.15) 0%, rgba(255, 107, 53, 0.1) 100%);
+    border-left-color: var(--instagram-primary);
+    color: #ff6b9d;
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.2);
+}
+
+.platform-facebook {
+    background: linear-gradient(135deg, rgba(25, 118, 210, 0.15) 0%, rgba(66, 165, 245, 0.1) 100%);
+    border-left-color: var(--facebook-primary);
+    color: #4dabf7;
+    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.2);
+}
+
+.platform-tiktok {
+    background: linear-gradient(135deg, rgba(255, 23, 68, 0.15) 0%, rgba(0, 229, 255, 0.1) 100%);
+    border-left-color: var(--tiktok-primary);
+    color: #ff6b9d;
+    box-shadow: 0 4px 15px rgba(255, 23, 68, 0.2);
+}
+
+.platform-twitch {
+    background: linear-gradient(135deg, rgba(156, 39, 176, 0.15) 0%, rgba(119, 31, 162, 0.1) 100%);
+    border-left-color: var(--twitch-primary);
+    color: #b197fc;
+    box-shadow: 0 4px 15px rgba(156, 39, 176, 0.2);
+}
+
+/* Button styles */
+.btn {
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-color: #007bff;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    border-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
+}
+
+.btn-outline-light {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    backdrop-filter: blur(5px);
+}
+
+.btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    border-color: #28a745;
+    color: white;
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #1e7e34, #155724);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
+}
+
+.btn-outline-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    border: 2px solid #ffc107;
+    color: #ffc107;
+}
+
+.btn-outline-warning:hover {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+    transform: translateY(-2px);
+}
+
+/* Form controls */
+.form-control, .form-select {
+    background-color: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--bg-tertiary);
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-control::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.8;
+}
+
+/* Platform-specific form focus */
+body.theme-youtube .form-control:focus,
+body.theme-youtube .form-select:focus,
+body.theme-youtube #platformSelect:focus,
+body.theme-youtube #qualitySelect:focus,
+body.theme-youtube #formatSelect:focus {
+    border-color: var(--youtube-primary);
+    box-shadow: 0 0 0 0.2rem rgba(255, 23, 68, 0.25);
+}
+
+body.theme-youtube #platformSelect,
+body.theme-youtube #qualitySelect,
+body.theme-youtube #formatSelect {
+    border-color: rgba(255, 23, 68, 0.3);
+}
+
+body.theme-instagram .form-control:focus,
+body.theme-instagram .form-select:focus,
+body.theme-instagram #platformSelect:focus,
+body.theme-instagram #qualitySelect:focus,
+body.theme-instagram #formatSelect:focus {
+    border-color: var(--instagram-primary);
+    box-shadow: 0 0 0 0.2rem rgba(233, 30, 99, 0.25);
+}
+
+body.theme-instagram #platformSelect,
+body.theme-instagram #qualitySelect,
+body.theme-instagram #formatSelect {
+    border-color: rgba(233, 30, 99, 0.3);
+}
+
+body.theme-facebook .form-control:focus,
+body.theme-facebook .form-select:focus,
+body.theme-facebook #platformSelect:focus,
+body.theme-facebook #qualitySelect:focus,
+body.theme-facebook #formatSelect:focus {
+    border-color: var(--facebook-primary);
+    box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
+}
+
+body.theme-facebook #platformSelect,
+body.theme-facebook #qualitySelect,
+body.theme-facebook #formatSelect {
+    border-color: rgba(25, 118, 210, 0.3);
+}
+
+body.theme-tiktok .form-control:focus,
+body.theme-tiktok .form-select:focus,
+body.theme-tiktok #platformSelect:focus,
+body.theme-tiktok #qualitySelect:focus,
+body.theme-tiktok #formatSelect:focus {
+    border-color: var(--tiktok-primary);
+    box-shadow: 0 0 0 0.2rem rgba(255, 23, 68, 0.25);
+}
+
+body.theme-tiktok #platformSelect,
+body.theme-tiktok #qualitySelect,
+body.theme-tiktok #formatSelect {
+    border-color: rgba(255, 23, 68, 0.3);
+}
+
+body.theme-twitch .form-control:focus,
+body.theme-twitch .form-select:focus,
+body.theme-twitch #platformSelect:focus,
+body.theme-twitch #qualitySelect:focus,
+body.theme-twitch #formatSelect:focus {
+    border-color: var(--twitch-primary);
+    box-shadow: 0 0 0 0.2rem rgba(156, 39, 176, 0.25);
+}
+
+body.theme-twitch #platformSelect,
+body.theme-twitch #qualitySelect,
+body.theme-twitch #formatSelect {
+    border-color: rgba(156, 39, 176, 0.3);
+}
+
+#qualitySelect option, #formatSelect option {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    padding: 12px;
+    font-weight: 500;
+}
+
+/* Platform selection dropdown enhancement */
+#platformSelect {
+    font-weight: 700;
+    font-size: 1.2rem;
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 3px solid var(--border-color);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#platformSelect:focus {
+    background-color: var(--bg-tertiary);
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.3rem rgba(0, 123, 255, 0.25);
+}
+
+#platformSelect option {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 15px;
+    font-weight: 600;
+    border: none;
+}
+
+/* Quality and format selects */
+#qualitySelect, #formatSelect {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    font-weight: 600;
+    font-size: 1rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#qualitySelect:focus, #formatSelect:focus {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+}
+
+#qualitySelect option, #formatSelect option {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 12px;
+    font-weight: 500;
+}
+
+/* Progress bar */
+.progress {
+    background-color: var(--bg-tertiary);
+    border-radius: 8px;
+    height: 25px;
+}
+
+.progress-bar {
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* VOD list styles */
+.vod-item {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.vod-item:hover {
+    background-color: var(--bg-primary);
+    border-color: var(--accent-primary);
+    transform: translateY(-1px);
+}
+
+.vod-item.selected {
+    background-color: rgba(0, 123, 255, 0.1);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.vod-item h6 {
+    color: var(--text-primary);
+    margin-bottom: 5px;
+}
+
+.vod-item small {
+    color: var(--text-secondary);
+}
+
+/* Video info styles - Enhanced visibility */
+#videoInfoCard {
+    background-color: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+#videoInfoCard .card-header {
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+    border-bottom: 2px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+#videoInfoContent {
+    background-color: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px 0;
+}
+
+#videoInfoContent h6 {
+    color: var(--accent-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    margin-top: 20px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 5px;
+}
+
+#videoInfoContent h6:first-child {
+    margin-top: 0;
+}
+
+#videoInfoContent p {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    line-height: 1.4;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-primary);
+    word-break: break-word;
+}
+
+#videoInfoContent .row {
+    margin-bottom: 10px;
+}
+
+#videoInfoContent .col-md-6 {
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Video thumbnail styles */
+.video-thumbnail {
+    border: 3px solid var(--accent-primary);
+    border-radius: 12px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.video-thumbnail:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+    border-color: var(--accent-secondary);
+}
+
+/* Platform-specific thumbnail borders */
+body.theme-youtube .video-thumbnail {
+    border-color: var(--youtube-primary);
+}
+
+body.theme-instagram .video-thumbnail {
+    border-color: var(--instagram-primary);
+}
+
+body.theme-facebook .video-thumbnail {
+    border-color: var(--facebook-primary);
+}
+
+body.theme-tiktok .video-thumbnail {
+    border-color: var(--tiktok-primary);
+}
+
+body.theme-twitch .video-thumbnail {
+    border-color: var(--twitch-primary);
+}
+
+/* Platform-specific video info colors */
+body.theme-youtube #videoInfoContent h6 {
+    color: var(--youtube-primary);
+    border-bottom-color: rgba(255, 23, 68, 0.3);
+}
+
+body.theme-youtube #videoInfoContent p {
+    border-left-color: var(--youtube-primary);
+}
+
+body.theme-instagram #videoInfoContent h6 {
+    color: var(--instagram-primary);
+    border-bottom-color: rgba(233, 30, 99, 0.3);
+}
+
+body.theme-instagram #videoInfoContent p {
+    border-left-color: var(--instagram-primary);
+}
+
+body.theme-facebook #videoInfoContent h6 {
+    color: var(--facebook-primary);
+    border-bottom-color: rgba(25, 118, 210, 0.3);
+}
+
+body.theme-facebook #videoInfoContent p {
+    border-left-color: var(--facebook-primary);
+}
+
+body.theme-tiktok #videoInfoContent h6 {
+    color: var(--tiktok-primary);
+    border-bottom-color: rgba(255, 23, 68, 0.3);
+}
+
+body.theme-tiktok #videoInfoContent p {
+    border-left-color: var(--tiktok-primary);
+}
+
+body.theme-twitch #videoInfoContent h6 {
+    color: var(--twitch-primary);
+    border-bottom-color: rgba(156, 39, 176, 0.3);
+}
+
+body.theme-twitch #videoInfoContent p {
+    border-left-color: var(--twitch-primary);
+}
+
+/* VOD thumbnail styles */
+.vod-thumbnail {
+    border: 2px solid var(--twitch-primary);
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.vod-thumbnail:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
+    border-color: var(--twitch-secondary);
+}
+
+.thumbnail-placeholder {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed rgba(156, 39, 176, 0.3);
+    transition: all 0.3s ease;
+}
+
+.vod-item:hover .thumbnail-placeholder {
+    border-color: var(--twitch-primary);
+    background-color: rgba(156, 39, 176, 0.2) !important;
+}
+
+.vod-item.selected .vod-thumbnail {
+    border-color: var(--twitch-secondary);
+    box-shadow: 0 0 20px rgba(156, 39, 176, 0.6);
+}
+
+.vod-item.selected .thumbnail-placeholder {
+    border-color: var(--twitch-secondary);
+    background-color: rgba(156, 39, 176, 0.3) !important;
+}
+
+/* Log container */
+.log-container {
+    background-color: #000;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    height: 300px;
+    overflow-y: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.log-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.log-container::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+.log-container::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.log-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Alert styles */
+.alert {
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #4caf50;
+    border-left: 4px solid #4caf50;
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #f44336;
+    border-left: 4px solid #f44336;
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ff9800;
+    border-left: 4px solid #ff9800;
+}
+
+.alert-info {
+    background-color: rgba(23, 162, 184, 0.1);
+    color: #2196f3;
+    border-left: 4px solid #2196f3;
+}
+
+/* Input group styles */
+.input-group .form-control {
+    border-right: none;
+}
+
+.input-group .btn {
+    border-left: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .log-container {
+        height: 200px;
+        font-size: 0.8rem;
+    }
+    
+    .vod-item {
+        padding: 10px;
+    }
+    
+    .vod-item .col-1,
+    .vod-item .col-2 {
+        font-size: 0.8rem;
+    }
+}
+
+/* Loading spinner */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Custom scrollbar for all elements */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) var(--bg-tertiary);
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Icon styles */
+.bi {
+    margin-right: 5px;
+}
+
+/* Interface visibility control */
+.standard-interface {
+    display: block;
+}
+
+.twitch-interface {
+    display: none;
+}
+
+/* Special styles for hidden elements */
+.d-none {
+    display: none !important;
+}
+
+/* Time input styling */
+input[type="time"] {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+input[type="time"]:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Number input styling */
+input[type="number"] {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+}
+
+input[type="number"]:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Enhanced text contrast for all platforms */
+body.theme-youtube .card-header h5,
+body.theme-youtube .platform-indicator,
+body.theme-youtube #videoInfoContent h6 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 23, 68, 0.5);
+    font-weight: 700;
+}
+
+body.theme-instagram .card-header h5,
+body.theme-instagram .platform-indicator,
+body.theme-instagram #videoInfoContent h6 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(233, 30, 99, 0.5);
+    font-weight: 700;
+}
+
+body.theme-facebook .card-header h5,
+body.theme-facebook .platform-indicator,
+body.theme-facebook #videoInfoContent h6 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(25, 118, 210, 0.5);
+    font-weight: 700;
+}
+
+body.theme-tiktok .card-header h5,
+body.theme-tiktok .platform-indicator,
+body.theme-tiktok #videoInfoContent h6 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 23, 68, 0.5);
+    font-weight: 700;
+}
+
+body.theme-twitch .card-header h5,
+body.theme-twitch .platform-indicator,
+body.theme-twitch #videoInfoContent h6 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(156, 39, 176, 0.5);
+    font-weight: 700;
+}
+
+/* Enhanced button text contrast */
+body.theme-youtube .btn-primary {
+    background: linear-gradient(135deg, var(--youtube-primary) 0%, var(--youtube-secondary) 100%);
+    border-color: var(--youtube-primary);
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    font-weight: 600;
+}
+
+body.theme-instagram .btn-primary {
+    background: linear-gradient(135deg, var(--instagram-primary) 0%, var(--instagram-secondary) 100%);
+    border-color: var(--instagram-primary);
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    font-weight: 600;
+}
+
+body.theme-facebook .btn-primary {
+    background: linear-gradient(135deg, var(--facebook-primary) 0%, var(--facebook-secondary) 100%);
+    border-color: var(--facebook-primary);
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    font-weight: 600;
+}
+
+body.theme-tiktok .btn-primary {
+    background: linear-gradient(135deg, var(--tiktok-primary) 0%, var(--tiktok-secondary) 100%);
+    border-color: var(--tiktok-primary);
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    font-weight: 600;
+}
+
+body.theme-twitch .btn-primary {
+    background: linear-gradient(135deg, var(--twitch-primary) 0%, var(--twitch-secondary) 100%);
+    border-color: var(--twitch-primary);
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    font-weight: 600;
+}

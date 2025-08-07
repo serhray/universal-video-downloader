@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos de Uso - Universal Video Downloader</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="display-5 fw-bold mb-2">
+                <i class="bi bi-file-text"></i> Termos de Uso
+            </h1>
+            <p class="lead">Universal Video Downloader</p>
+            <p class="text-muted">Última atualização: {{ current_date or "Janeiro 2025" }}</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-body p-4">
+                        
+                        <!-- Aceitação -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-check-circle text-primary"></i> 1. Aceitação dos Termos</h3>
+                            <p>Ao acessar e usar o <strong>Universal Video Downloader</strong>, você concorda em cumprir estes Termos de Uso. Se você não concorda com qualquer parte destes termos, não deve usar nosso serviço.</p>
+                            <p>Estes termos constituem um acordo legal entre você e o Universal Video Downloader.</p>
+                        </section>
+
+                        <!-- Descrição do Serviço -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-gear text-primary"></i> 2. Descrição do Serviço</h3>
+                            <p>O Universal Video Downloader é uma ferramenta online que permite:</p>
+                            <ul>
+                                <li>Baixar vídeos de plataformas públicas (YouTube, Instagram, Facebook, TikTok, Twitch)</li>
+                                <li>Converter vídeos em diferentes formatos e qualidades</li>
+                                <li>Acessar funcionalidades de download gratuitas e premium</li>
+                            </ul>
+                            <p><strong>Importante:</strong> Nosso serviço é apenas uma ferramenta. Você é responsável pelo uso adequado e legal do conteúdo baixado.</p>
+                        </section>
+
+                        <!-- Uso Permitido -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-check2-square text-primary"></i> 3. Uso Permitido</h3>
+                            <p>Você pode usar nosso serviço para:</p>
+                            <ul>
+                                <li>Baixar vídeos de sua própria autoria</li>
+                                <li>Baixar conteúdo com permissão expressa do autor</li>
+                                <li>Baixar conteúdo de domínio público</li>
+                                <li>Uso educacional e pessoal dentro dos limites legais</li>
+                                <li>Backup de conteúdo próprio</li>
+                            </ul>
+                        </section>
+
+                        <!-- Uso Proibido -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-x-circle text-primary"></i> 4. Uso Proibido</h3>
+                            <p>É <strong>estritamente proibido</strong> usar nosso serviço para:</p>
+                            <ul>
+                                <li>Violação de direitos autorais ou propriedade intelectual</li>
+                                <li>Download de conteúdo protegido sem autorização</li>
+                                <li>Redistribuição comercial de conteúdo de terceiros</li>
+                                <li>Atividades ilegais ou que violem termos das plataformas originais</li>
+                                <li>Spam, abuso ou sobrecarga do sistema</li>
+                                <li>Tentativas de hackear ou comprometer a segurança</li>
+                                <li>Uso automatizado excessivo (bots, scrapers)</li>
+                            </ul>
+                        </section>
+
+                        <!-- Responsabilidades do Usuário -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-person-check text-primary"></i> 5. Responsabilidades do Usuário</h3>
+                            <p>Ao usar nosso serviço, você se compromete a:</p>
+                            <ul>
+                                <li><strong>Respeitar direitos autorais:</strong> Verificar se tem direito de baixar o conteúdo</li>
+                                <li><strong>Cumprir leis locais:</strong> Seguir legislação de seu país/região</li>
+                                <li><strong>Uso responsável:</strong> Não sobrecarregar nossos servidores</li>
+                                <li><strong>Informações precisas:</strong> Fornecer dados corretos quando solicitado</li>
+                                <li><strong>Segurança:</strong> Manter suas credenciais seguras</li>
+                            </ul>
+                        </section>
+
+                        <!-- Limitações do Serviço -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-exclamation-triangle text-primary"></i> 6. Limitações do Serviço</h3>
+                            
+                            <h5>6.1 Disponibilidade</h5>
+                            <ul>
+                                <li>O serviço é fornecido "como está" sem garantias</li>
+                                <li>Pode haver interrupções para manutenção</li>
+                                <li>Não garantimos 100% de uptime</li>
+                            </ul>
+
+                            <h5>6.2 Limitações Técnicas</h5>
+                            <ul>
+                                <li>Dependemos de APIs de terceiros que podem mudar</li>
+                                <li>Alguns vídeos podem não estar disponíveis para download</li>
+                                <li>Limitações de tamanho e duração podem se aplicar</li>
+                            </ul>
+
+                            <h5>6.3 Rate Limiting</h5>
+                            <ul>
+                                <li>Usuários gratuitos: Limitações de downloads por dia/hora</li>
+                                <li>Proteção contra abuso e spam</li>
+                                <li>Planos premium com limites expandidos</li>
+                            </ul>
+                        </section>
+
+                        <!-- Propriedade Intelectual -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-shield-lock text-primary"></i> 7. Propriedade Intelectual</h3>
+                            <p>O Universal Video Downloader e todo seu conteúdo (código, design, textos, logos) são protegidos por direitos autorais.</p>
+                            <p><strong>Você não pode:</strong></p>
+                            <ul>
+                                <li>Copiar, modificar ou distribuir nosso código</li>
+                                <li>Criar serviços similares baseados no nosso</li>
+                                <li>Usar nossas marcas ou logos sem autorização</li>
+                                <li>Fazer engenharia reversa do sistema</li>
+                            </ul>
+                        </section>
+
+                        <!-- Planos Premium -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-star text-primary"></i> 8. Planos Premium</h3>
+                            
+                            <h5>8.1 Benefícios</h5>
+                            <ul>
+                                <li>Downloads ilimitados</li>
+                                <li>Sem anúncios</li>
+                                <li>Qualidade premium</li>
+                                <li>Suporte prioritário</li>
+                            </ul>
+
+                            <h5>8.2 Pagamento e Renovação</h5>
+                            <ul>
+                                <li>Pagamentos processados por terceiros seguros</li>
+                                <li>Renovação automática (pode ser cancelada)</li>
+                                <li>Sem reembolsos após 7 dias da compra</li>
+                                <li>Preços sujeitos a alteração com aviso prévio</li>
+                            </ul>
+                        </section>
+
+                        <!-- Privacidade -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-shield-check text-primary"></i> 9. Privacidade</h3>
+                            <p>Sua privacidade é importante para nós. Nossa coleta e uso de dados é regida por nossa <a href="{{ url_for('privacy_policy') }}">Política de Privacidade</a>.</p>
+                            <p>Principais pontos:</p>
+                            <ul>
+                                <li>Não armazenamos URLs de vídeos permanentemente</li>
+                                <li>Usamos cookies para funcionalidade e anúncios</li>
+                                <li>Dados são protegidos conforme LGPD</li>
+                            </ul>
+                        </section>
+
+                        <!-- Isenção de Responsabilidade -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-exclamation-diamond text-primary"></i> 10. Isenção de Responsabilidade</h3>
+                            <p><strong>O Universal Video Downloader não se responsabiliza por:</strong></p>
+                            <ul>
+                                <li>Uso inadequado ou ilegal do serviço pelo usuário</li>
+                                <li>Violações de direitos autorais cometidas pelo usuário</li>
+                                <li>Danos causados por malware em vídeos baixados</li>
+                                <li>Perda de dados ou interrupções do serviço</li>
+                                <li>Conteúdo dos vídeos baixados</li>
+                                <li>Mudanças nas plataformas de terceiros</li>
+                            </ul>
+                        </section>
+
+                        <!-- Suspensão e Cancelamento -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-ban text-primary"></i> 11. Suspensão e Cancelamento</h3>
+                            
+                            <h5>11.1 Suspensão por Violação</h5>
+                            <p>Podemos suspender ou banir usuários que:</p>
+                            <ul>
+                                <li>Violem estes termos de uso</li>
+                                <li>Usem o serviço para atividades ilegais</li>
+                                <li>Abusem do sistema ou façam spam</li>
+                                <li>Tentem comprometer a segurança</li>
+                            </ul>
+
+                            <h5>11.2 Cancelamento pelo Usuário</h5>
+                            <ul>
+                                <li>Você pode parar de usar o serviço a qualquer momento</li>
+                                <li>Assinaturas premium podem ser canceladas na área do usuário</li>
+                                <li>Dados são removidos conforme política de retenção</li>
+                            </ul>
+                        </section>
+
+                        <!-- Alterações nos Termos -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-arrow-clockwise text-primary"></i> 12. Alterações nos Termos</h3>
+                            <p>Reservamos o direito de modificar estes termos a qualquer momento. Alterações significativas serão notificadas através do site.</p>
+                            <p>O uso continuado após alterações constitui aceitação dos novos termos.</p>
+                        </section>
+
+                        <!-- Lei Aplicável -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-gavel text-primary"></i> 13. Lei Aplicável</h3>
+                            <p>Estes termos são regidos pelas leis brasileiras. Disputas serão resolvidas nos tribunais competentes do Brasil.</p>
+                        </section>
+
+                        <!-- Contato -->
+                        <section class="mb-4">
+                            <h3><i class="bi bi-envelope text-primary"></i> 14. Contato</h3>
+                            <p>Para dúvidas sobre estes Termos de Uso:</p>
+                            <ul>
+                                <li><strong>Email:</strong> legal@universaldownloader.com</li>
+                                <li><strong>Suporte:</strong> support@universaldownloader.com</li>
+                            </ul>
+                        </section>
+
+                    </div>
+                </div>
+
+                <!-- Botão Voltar -->
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i> Voltar ao Site
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

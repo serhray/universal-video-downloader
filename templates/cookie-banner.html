@@ -1,0 +1,350 @@
+<!-- Banner de Cookies LGPD -->
+<div id="cookieBanner" class="cookie-banner" style="display: none;">
+    <div class="cookie-banner-content">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="cookie-text">
+                        <h6><i class="bi bi-cookie"></i> <strong>Cookies e Privacidade</strong></h6>
+                        <p class="mb-2">
+                            Utilizamos cookies essenciais para o funcionamento do site e cookies de terceiros (Google AdSense) para anúncios personalizados. 
+                            Ao continuar navegando, você concorda com nossa 
+                            <a href="{{ url_for('privacy_policy') }}" target="_blank">Política de Privacidade</a>.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="cookie-buttons text-lg-end">
+                        <button type="button" class="btn btn-outline-light btn-sm me-2" onclick="manageCookies()">
+                            <i class="bi bi-gear"></i> Gerenciar
+                        </button>
+                        <button type="button" class="btn btn-success btn-sm me-2" onclick="acceptAllCookies()">
+                            <i class="bi bi-check-lg"></i> Aceitar Todos
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="acceptEssentialOnly()">
+                            Apenas Essenciais
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Gerenciamento de Cookies -->
+<div class="modal fade" id="cookieModal" tabindex="-1" aria-labelledby="cookieModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cookieModalLabel">
+                    <i class="bi bi-cookie"></i> Configurações de Cookies
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Você pode escolher quais tipos de cookies aceitar. Note que desabilitar alguns cookies pode afetar a funcionalidade do site.</p>
+                
+                <!-- Cookies Essenciais -->
+                <div class="cookie-category mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6><i class="bi bi-shield-check text-success"></i> Cookies Essenciais</h6>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="essentialCookies" checked disabled>
+                            <label class="form-check-label" for="essentialCookies">Sempre Ativo</label>
+                        </div>
+                    </div>
+                    <p class="text-muted small">
+                        Necessários para o funcionamento básico do site, incluindo segurança e funcionalidades essenciais.
+                    </p>
+                </div>
+
+                <!-- Cookies de Performance -->
+                <div class="cookie-category mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6><i class="bi bi-graph-up text-info"></i> Cookies de Performance</h6>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="performanceCookies">
+                            <label class="form-check-label" for="performanceCookies">Opcional</label>
+                        </div>
+                    </div>
+                    <p class="text-muted small">
+                        Nos ajudam a entender como você usa o site para melhorar a experiência (Google Analytics).
+                    </p>
+                </div>
+
+                <!-- Cookies de Publicidade -->
+                <div class="cookie-category mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6><i class="bi bi-megaphone text-warning"></i> Cookies de Publicidade</h6>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="advertisingCookies">
+                            <label class="form-check-label" for="advertisingCookies">Opcional</label>
+                        </div>
+                    </div>
+                    <p class="text-muted small">
+                        Usados pelo Google AdSense para exibir anúncios relevantes baseados em seus interesses.
+                    </p>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Seus Direitos:</strong> Você pode alterar suas preferências a qualquer momento ou solicitar exclusão de dados conforme a LGPD.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="acceptEssentialOnly()">
+                    Apenas Essenciais
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveCustomPreferences()">
+                    Salvar Preferências
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Estilos do Banner de Cookies */
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: white;
+    z-index: 9999;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    animation: slideUp 0.5s ease-out;
+}
+
+.cookie-banner-content {
+    padding: 20px 0;
+}
+
+.cookie-text h6 {
+    margin-bottom: 8px;
+    color: #ecf0f1;
+}
+
+.cookie-text p {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #bdc3c7;
+}
+
+.cookie-text a {
+    color: #3498db;
+    text-decoration: underline;
+}
+
+.cookie-text a:hover {
+    color: #2980b9;
+}
+
+.cookie-buttons .btn {
+    font-size: 13px;
+    padding: 6px 12px;
+}
+
+.cookie-category {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f8f9fa;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .cookie-banner-content {
+        padding: 15px 0;
+    }
+    
+    .cookie-text {
+        margin-bottom: 15px;
+    }
+    
+    .cookie-buttons {
+        text-align: center !important;
+    }
+    
+    .cookie-buttons .btn {
+        margin: 2px;
+        font-size: 12px;
+    }
+}
+</style>
+
+<script>
+// JavaScript para Gerenciamento de Cookies LGPD
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar se o usuário já fez uma escolha
+    if (!localStorage.getItem('cookieConsent')) {
+        // Mostrar banner após 2 segundos
+        setTimeout(function() {
+            document.getElementById('cookieBanner').style.display = 'block';
+        }, 2000);
+    } else {
+        // Aplicar preferências salvas
+        applyCookiePreferences();
+    }
+});
+
+function acceptAllCookies() {
+    const consent = {
+        essential: true,
+        performance: true,
+        advertising: true,
+        timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('cookieConsent', JSON.stringify(consent));
+    hideCookieBanner();
+    applyCookiePreferences();
+    
+    // Mostrar confirmação
+    showToast('Todas as preferências de cookies foram salvas!', 'success');
+}
+
+function acceptEssentialOnly() {
+    const consent = {
+        essential: true,
+        performance: false,
+        advertising: false,
+        timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('cookieConsent', JSON.stringify(consent));
+    hideCookieBanner();
+    applyCookiePreferences();
+    
+    // Fechar modal se estiver aberto
+    const modal = bootstrap.Modal.getInstance(document.getElementById('cookieModal'));
+    if (modal) modal.hide();
+    
+    showToast('Apenas cookies essenciais foram aceitos!', 'info');
+}
+
+function manageCookies() {
+    hideCookieBanner();
+    
+    // Carregar preferências atuais no modal
+    const consent = JSON.parse(localStorage.getItem('cookieConsent') || '{}');
+    document.getElementById('performanceCookies').checked = consent.performance || false;
+    document.getElementById('advertisingCookies').checked = consent.advertising || false;
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('cookieModal'));
+    modal.show();
+}
+
+function saveCustomPreferences() {
+    const consent = {
+        essential: true, // Sempre true
+        performance: document.getElementById('performanceCookies').checked,
+        advertising: document.getElementById('advertisingCookies').checked,
+        timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('cookieConsent', JSON.stringify(consent));
+    applyCookiePreferences();
+    
+    // Fechar modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('cookieModal'));
+    modal.hide();
+    
+    showToast('Suas preferências de cookies foram salvas!', 'success');
+}
+
+function hideCookieBanner() {
+    document.getElementById('cookieBanner').style.display = 'none';
+}
+
+function applyCookiePreferences() {
+    const consent = JSON.parse(localStorage.getItem('cookieConsent') || '{}');
+    
+    // Aplicar configurações de cookies baseado nas preferências
+    if (consent.advertising) {
+        // Habilitar Google AdSense
+        enableGoogleAdsense();
+    } else {
+        // Desabilitar cookies de publicidade
+        disableAdvertisingCookies();
+    }
+    
+    if (consent.performance) {
+        // Habilitar Google Analytics (se implementado)
+        enableGoogleAnalytics();
+    } else {
+        // Desabilitar cookies de performance
+        disablePerformanceCookies();
+    }
+}
+
+function enableGoogleAdsense() {
+    // Implementar carregamento do AdSense quando aprovado
+    console.log('Google AdSense habilitado');
+}
+
+function disableAdvertisingCookies() {
+    // Remover cookies de publicidade
+    const adCookies = ['_gads', '_gac_', '__gads'];
+    adCookies.forEach(cookie => {
+        document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    });
+}
+
+function enableGoogleAnalytics() {
+    // Implementar Google Analytics se necessário
+    console.log('Google Analytics habilitado');
+}
+
+function disablePerformanceCookies() {
+    // Remover cookies de performance
+    const perfCookies = ['_ga', '_gid', '_gat'];
+    perfCookies.forEach(cookie => {
+        document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    });
+}
+
+function showToast(message, type = 'info') {
+    // Criar toast notification
+    const toastHtml = `
+        <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'primary'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-${type === 'success' ? 'check-circle' : 'info-circle'}"></i> ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+    
+    // Adicionar ao container de toasts (criar se não existir)
+    let toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toastContainer';
+        toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        toastContainer.style.zIndex = '10000';
+        document.body.appendChild(toastContainer);
+    }
+    
+    toastContainer.innerHTML = toastHtml;
+    const toast = new bootstrap.Toast(toastContainer.querySelector('.toast'));
+    toast.show();
+}
+
+// Função para mostrar configurações de cookies (pode ser chamada de qualquer lugar)
+function showCookieSettings() {
+    manageCookies();
+}
+</script>
