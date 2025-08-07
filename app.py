@@ -255,8 +255,15 @@ def download_video():
                     elif platform == 'TikTok':
                         success = downloader.download_video(url, temp_dir, progress_callback)
                     elif platform == 'Twitch':
-                        # CORRIGIR: Usar método correto para Twitch
+                        # ESTRATÉGIA DUPLA: TwitchVercel + Fallback
+                        print(f"🎮 Tentando download da Twitch com TwitchVercel...")
                         success = downloader.download_video(url, temp_dir, progress_callback)
+                        
+                        # Se falhar no Vercel, tentar com TwitchDownloader local
+                        if not success and os.environ.get('VERCEL') == '1':
+                            print(f"⚠️ TwitchVercel falhou, tentando fallback com TwitchDownloader...")
+                            fallback_downloader = twitch_dl  # TwitchDownloader local
+                            success = fallback_downloader.download_video(url, temp_dir, progress_callback)
                     else:
                         success = False
                 
