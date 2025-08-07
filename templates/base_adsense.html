@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }} - {% endif %}Universal Video Downloader</title>
+    
+    <!-- Meta tags para SEO e AdSense -->
+    <meta name="description" content="Download gratuito de vídeos do Instagram, Facebook, TikTok e Twitch. Ferramenta online rápida e segura para baixar seus vídeos favoritos.">
+    <meta name="keywords" content="download video, instagram, facebook, tiktok, twitch, baixar video, downloader">
+    <meta name="author" content="Universal Video Downloader">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph para redes sociais -->
+    <meta property="og:title" content="Universal Video Downloader">
+    <meta property="og:description" content="Download gratuito de vídeos das principais plataformas sociais">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    
+    <!-- Google AdSense - CÓDIGO REAL DO ADSENSE -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4811291962053" crossorigin="anonymous"></script>
+    
+    <!-- CSS existente -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adsense.css') }}">
+    
+    <!-- Google Analytics (opcional) -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script> -->
+</head>
+<body>
+    <div class="container">
+        <!-- Header com espaço para anúncio -->
+        <header>
+            <h1>🎬 Universal Video Downloader</h1>
+            <p>Download gratuito de vídeos do Instagram, Facebook, TikTok e Twitch</p>
+            
+            <!-- Espaço para anúncio horizontal (728x90) -->
+            <div class="ad-space ad-horizontal" id="header-ad">
+                <!-- AdSense será inserido aqui após aprovação -->
+                <div class="ad-placeholder">
+                    <p>📢 Espaço reservado para anúncios</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Conteúdo principal -->
+        <main>
+            {% block content %}
+            <!-- Conteúdo da página -->
+            {% endblock %}
+        </main>
+
+        <!-- Sidebar com anúncios -->
+        <aside class="sidebar">
+            <!-- Espaço para anúncio vertical (300x250) -->
+            <div class="ad-space ad-square" id="sidebar-ad-1">
+                <div class="ad-placeholder">
+                    <p>📢 Anúncio</p>
+                </div>
+            </div>
+            
+            <!-- Informações úteis -->
+            <div class="info-box">
+                <h3>🎯 Plataformas Suportadas</h3>
+                <ul>
+                    <li>✅ Instagram (Posts e Stories)</li>
+                    <li>✅ Facebook (Vídeos públicos)</li>
+                    <li>✅ TikTok (Sem marca d'água)</li>
+                    <li>✅ Twitch (Clips e VODs)</li>
+                    <li>🔧 YouTube (em manutenção)</li>
+                </ul>
+            </div>
+            
+            <!-- Outro espaço para anúncio -->
+            <div class="ad-space ad-square" id="sidebar-ad-2">
+                <div class="ad-placeholder">
+                    <p>📢 Anúncio</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Footer -->
+        <footer>
+            <!-- Espaço para anúncio horizontal inferior -->
+            <div class="ad-space ad-horizontal" id="footer-ad">
+                <div class="ad-placeholder">
+                    <p>📢 Espaço para anúncios</p>
+                </div>
+            </div>
+            
+            <div class="footer-content">
+                <p>&copy; 2024 Universal Video Downloader. Todos os direitos reservados.</p>
+                <div class="footer-links">
+                    <a href="/privacy">Política de Privacidade</a> |
+                    <a href="/terms">Termos de Uso</a> |
+                    <a href="/contact">Contato</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Google AdSense Auto Ads (adicionar após aprovação) -->
+    <!-- <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+</body>
+</html>

@@ -1,0 +1,214 @@
+/* Estilos para Google AdSense */
+
+/* Container principal com layout para anúncios */
+.container {
+    display: grid;
+    grid-template-areas: 
+        "header header"
+        "main sidebar"
+        "footer footer";
+    grid-template-columns: 1fr 320px;
+    grid-gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    grid-area: header;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Main content */
+main {
+    grid-area: main;
+    min-height: 600px;
+}
+
+/* Sidebar */
+.sidebar {
+    grid-area: sidebar;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Footer */
+footer {
+    grid-area: footer;
+    margin-top: 40px;
+}
+
+/* Espaços para anúncios */
+.ad-space {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    margin: 15px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Anúncios horizontais (728x90 ou 320x50 mobile) */
+.ad-horizontal {
+    width: 100%;
+    height: 90px;
+    min-height: 90px;
+}
+
+/* Anúncios quadrados/retangulares (300x250) */
+.ad-square {
+    width: 300px;
+    height: 250px;
+    min-height: 250px;
+}
+
+/* Placeholders dos anúncios */
+.ad-placeholder {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    padding: 10px;
+}
+
+.ad-placeholder p {
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Estilos quando AdSense estiver ativo */
+.ad-space.active {
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+/* Info box na sidebar */
+.info-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.info-box h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.info-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-box li {
+    padding: 5px 0;
+    font-size: 14px;
+}
+
+/* Footer content */
+.footer-content {
+    text-align: center;
+    padding: 20px 0;
+    border-top: 1px solid #eee;
+    margin-top: 20px;
+}
+
+.footer-links {
+    margin-top: 10px;
+}
+
+.footer-links a {
+    color: #667eea;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+    .container {
+        grid-template-areas: 
+            "header"
+            "main"
+            "sidebar"
+            "footer";
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+    
+    /* Anúncios horizontais em mobile (320x50) */
+    .ad-horizontal {
+        height: 50px;
+        min-height: 50px;
+    }
+    
+    /* Anúncios quadrados em mobile (300x250 ou 320x50) */
+    .ad-square {
+        width: 100%;
+        max-width: 320px;
+        height: 250px;
+        margin: 0 auto;
+    }
+    
+    .sidebar {
+        margin-top: 20px;
+    }
+}
+
+/* Animações para os placeholders */
+.ad-placeholder {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+/* Estilos específicos para diferentes tipos de anúncio */
+#header-ad {
+    background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+    border-color: #f5576c;
+}
+
+#sidebar-ad-1, #sidebar-ad-2 {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-color: #00f2fe;
+}
+
+#footer-ad {
+    background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+    border-color: #38f9d7;
+}
+
+/* Hover effects para os espaços de anúncio */
+.ad-space:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+/* Estilos para quando os anúncios reais estiverem carregados */
+.adsbygoogle {
+    display: block !important;
+    margin: 15px 0;
+}
+
+/* Garantir que anúncios não quebrem o layout */
+ins.adsbygoogle {
+    text-decoration: none !important;
+    display: block !important;
+}
