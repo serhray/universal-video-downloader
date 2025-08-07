@@ -281,3 +281,111 @@ class TwitchVercel:
         except Exception as e:
             print(f"❌ Erro no download da Twitch: {str(e)}")
             return False
+
+class TwitchVercel:
+    """Configuração específica para Twitch no ambiente Vercel"""
+    
+    def __init__(self):
+        # Detectar se está no Vercel
+        self.is_vercel = os.environ.get('VERCEL') == '1' or os.environ.get('VERCEL_ENV') is not None
+        
+        # User-Agents otimizados para Vercel
+        self.vercel_user_agents = [
+            # Mobile (menos detectáveis em datacenters)
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+            'Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+            'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+            
+            # Desktop com características específicas
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        ]
+        
+        # Países com menor detecção
+        self.safe_countries = ['CA', 'AU', 'NL', 'DE']
+    
+    def get_vercel_config(self, progress_hook=None):
+        """Configuração otimizada para Twitch no Vercel"""
+        
+        # Configurações mais agressivas para Vercel
+        if self.is_vercel:
+            timeout = 30  # Timeout menor para Vercel
+            retries = 5   # Menos retries no Vercel
+            user_agent = random.choice(self.vercel_user_agents)
+            country = random.choice(self.safe_countries)
+        else:
+            timeout = 60  # Timeout maior para localhost
+            retries = 8   # Mais retries no localhost
+            user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            country = 'US'
+        
+        config = {
+            'format': 'best[ext=mp4]/best',  # Preferir MP4
+            'writeinfojson': False,
+            'writesubtitles': False,
+            'writeautomaticsub': False,
+            'ignoreerrors': False,
+            'no_warnings': False,
+            'embed_subs': False,
+            
+            # Configurações de rede otimizadas
+            'socket_timeout': timeout,
+            'retries': retries,
+            'fragment_retries': retries,
+            'retry_sleep_functions': {
+                'http': lambda n: min(2 ** n, 30),
+                'fragment': lambda n: min(2 ** n, 30),
+            },
+            
+            # Headers otimizados para Twitch
+            'http_headers': {
+                'User-Agent': user_agent,
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept-Encoding': 'gzip, deflate',
+                'DNT': '1',
+                'Connection': 'keep-alive',
+            },
+            
+            # Geo-bypass para Twitch
+            'geo_bypass': True,
+            'geo_bypass_country': country,
+        }
+        
+        # Adicionar hook de progresso se fornecido
+        if progress_hook:
+            config['progress_hooks'] = [progress_hook]
+        
+        return config
+    
+    def download_video(self, url, output_path, progress_hook=None):
+        """Download otimizado para Twitch no Vercel"""
+        
+        try:
+            # Criar diretório
+            Path(output_path).mkdir(parents=True, exist_ok=True)
+            output_template = os.path.join(output_path, '%(uploader)s_%(title)s.%(ext)s')
+            
+            # Configuração base
+            config = self.get_vercel_config(progress_hook)
+            config['outtmpl'] = output_template
+            
+            # Log da configuração
+            env_type = "VERCEL" if self.is_vercel else "LOCALHOST"
+            print(f"🎮 Twitch Download - Ambiente: {env_type}")
+            print(f"📱 User-Agent: {config['http_headers']['User-Agent'][:50]}...")
+            print(f"⏱️ Timeout: {config['socket_timeout']}s")
+            print(f"🔄 Retries: {config['retries']}")
+            print(f"🌍 País: {config['geo_bypass_country']}")
+            
+            # Executar download
+            with yt_dlp.YoutubeDL(config) as ydl:
+                print(f"🚀 Baixando vídeo da Twitch...")
+                ydl.download([url])
+                
+            print(f"✅ Download da Twitch concluído no ambiente {env_type}")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Erro no download da Twitch: {str(e)}")
+            return False
