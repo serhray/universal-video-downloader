@@ -21,9 +21,29 @@ class YouTubeDownloader:
     def get_video_info(self, url):
         """Obter informações detalhadas do vídeo sem baixar"""
         ydl_opts = {
-            **self.ydl_opts_base,
             'quiet': True,
             'no_warnings': True,
+            'noplaylist': True,
+            'extract_flat': False,
+            # Opções críticas para evitar .mhtml
+            'writesubtitles': False,
+            'writeautomaticsub': False,
+            'writedescription': False,
+            'writeinfojson': False,
+            'writethumbnail': False,
+            'writewebvtt': False,
+            'writedesktoplink': False,
+            'writeurllink': False,
+            'writeannotations': False,
+            # Headers anti-bot para obter informações
+            'http_headers': {
+                'User-Agent': random.choice(self.user_agents),
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'DNT': '1',
+                'Connection': 'keep-alive',
+            },
         }
         
         try:
