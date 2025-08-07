@@ -11,6 +11,7 @@ import time
 # Importar downloaders existentes
 from youtube_downloader import YouTubeDownloader
 from youtube_anti_bot import YouTubeAntiBot
+from youtube_ultimate import YouTubeUltimate
 from instagram_downloader import InstagramDownloader
 from facebook_downloader import FacebookDownloader
 from tiktok_downloader import TikTokDownloader
@@ -29,6 +30,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # Inicializar downloaders
 youtube_dl = YouTubeDownloader()
 youtube_anti_bot = YouTubeAntiBot()  # Inicializar a solução anti-bot do YouTube
+youtube_ultimate = YouTubeUltimate()  # Inicializar a solução extrema do YouTube
 instagram_dl = InstagramDownloader()
 facebook_dl = FacebookDownloader()
 tiktok_dl = TikTokDownloader()
