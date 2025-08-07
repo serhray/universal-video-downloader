@@ -192,36 +192,49 @@ def download_video():
         }
         
         def progress_callback(d):
-            """Callback para atualizar progresso via WebSocket"""
+            """Callback de progresso compatível com Vercel (sem WebSocket)"""
             if d['status'] == 'downloading':
-                if 'total_bytes' in d and d['total_bytes']:
-                    progress = (d['downloaded_bytes'] / d['total_bytes']) * 100
-                    active_downloads[download_id]['progress'] = progress
-                    socketio.emit('download_progress', {
-                        'download_id': download_id,
-                        'progress': progress,
-                        'status': 'downloading'
-                    })
-                elif '_percent_str' in d:
-                    # Extrair porcentagem do string
-                    percent_str = d['_percent_str'].strip().replace('%', '')
-                    try:
-                        progress = float(percent_str)
+                try:
+                    downloaded = d.get('downloaded_bytes', 0)
+                    total = d.get('total_bytes') or d.get('total_bytes_estimate', 0)
+                    
+                    if total > 0:
+                        progress = int((downloaded / total) * 100)
                         active_downloads[download_id]['progress'] = progress
-                        socketio.emit('download_progress', {
-                            'download_id': download_id,
-                            'progress': progress,
-                            'status': 'downloading'
-                        })
-                    except:
-                        pass
+                        
+                        # Vercel: apenas logs, sem WebSocket
+                        if os.environ.get('VERCEL') == '1':
+                            print(f"📊 VERCEL Progress: {progress}% - {downloaded}/{total} bytes")
+                        else:
+                            # Localhost: tentar WebSocket, mas não falhar se der erro
+                            try:
+                                socketio.emit('download_progress', {
+                                    'download_id': download_id,
+                                    'progress': progress,
+                                    'status': 'downloading'
+                                })
+                            except:
+                                print(f"📊 LOCAL Progress: {progress}% - WebSocket failed, continuing...")
+                                
+                except Exception as e:
+                    print(f"⚠️ Progress callback error (continuing): {e}")
+                    # Continuar sem falhar
+                    pass
             elif d['status'] == 'finished':
                 active_downloads[download_id]['status'] = 'completed'
-                socketio.emit('download_progress', {
-                    'download_id': download_id,
-                    'progress': 100,
-                    'status': 'completed'
-                })
+                print(f"✅ Download finished: {download_id}")
+                
+                # Tentar WebSocket apenas se não for Vercel
+                if os.environ.get('VERCEL') != '1':
+                    try:
+                        socketio.emit('download_progress', {
+                            'download_id': download_id,
+                            'progress': 100,
+                            'status': 'completed'
+                        })
+                    except:
+                        print(f"✅ Download completed (WebSocket failed)")
+                        pass
         
         def download_thread():
             try:
