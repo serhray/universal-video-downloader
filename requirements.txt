@@ -3,8 +3,8 @@
 Flask==3.0.0
 Flask-SocketIO==5.3.6
 
-# Video downloading - VERSÃO EXATA que funciona no localhost
-yt-dlp==2025.01.27
+# Video downloading - VERSÃO MAIS RECENTE DISPONÍVEL
+yt-dlp>=2024.12.23
 
 # Additional dependencies
 python-socketio==5.10.0
