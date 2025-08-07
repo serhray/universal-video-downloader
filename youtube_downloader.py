@@ -1,6 +1,7 @@
 import os
 import yt_dlp
 import random
+import re
 from pathlib import Path
 
 class YouTubeDownloader:
