@@ -1,14 +1,11 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "app.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
+  "functions": {
+    "app.py": {
+      "runtime": "python3.9",
+      "maxDuration": 30
     }
-  ],
+  },
   "routes": [
     {
       "src": "/static/(.*)",
@@ -21,10 +18,5 @@
   ],
   "env": {
     "PYTHONPATH": "/var/task"
-  },
-  "functions": {
-    "app.py": {
-      "maxDuration": 30
-    }
   }
 }
