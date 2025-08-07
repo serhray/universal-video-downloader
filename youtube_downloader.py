@@ -76,26 +76,6 @@ class YouTubeDownloader:
                     'writedescription': False,
                     'writeinfojson': False,
                     'writethumbnail': False,
-                    # ANTI-BOT: Headers HTTP realistas
-                    'http_headers': {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-                        'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
-                        'Accept-Encoding': 'gzip, deflate, br',
-                        'DNT': '1',
-                        'Connection': 'keep-alive',
-                        'Upgrade-Insecure-Requests': '1',
-                    },
-                    # ANTI-BOT: Rate limiting e delays
-                    'sleep_interval': 1,
-                    'max_sleep_interval': 3,
-                    'sleep_interval_requests': 1,
-                    # ANTI-BOT: Configurações de rede
-                    'socket_timeout': 30,
-                    'retries': 3,
-                    # ANTI-BOT: Configurações adicionais
-                    'no_warnings': True,
-                    'ignoreerrors': False,
                 }
             else:
                 # Para vídeo - SELETORES OTIMIZADOS (máxima qualidade + áudio compatível)
@@ -115,7 +95,7 @@ class YouTubeDownloader:
                     'outtmpl': output_template,
                     'format': format_selector,
                     'progress_hooks': [progress_hook] if progress_hook else [],
-                    # ANTI-BOT: Headers HTTP realistas
+                    # ANTI-BOT AVANÇADO: Headers HTTP realistas
                     'http_headers': {
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -124,14 +104,36 @@ class YouTubeDownloader:
                         'DNT': '1',
                         'Connection': 'keep-alive',
                         'Upgrade-Insecure-Requests': '1',
+                        'Sec-Fetch-Dest': 'document',
+                        'Sec-Fetch-Mode': 'navigate',
+                        'Sec-Fetch-Site': 'none',
+                        'Sec-Fetch-User': '?1',
+                        'Cache-Control': 'max-age=0',
                     },
-                    # ANTI-BOT: Rate limiting e delays
-                    'sleep_interval': 1,
-                    'max_sleep_interval': 3,
-                    'sleep_interval_requests': 1,
-                    # ANTI-BOT: Configurações de rede
-                    'socket_timeout': 30,
-                    'retries': 3,
+                    # ANTI-BOT AVANÇADO: Rate limiting mais agressivo
+                    'sleep_interval': 2,
+                    'max_sleep_interval': 5,
+                    'sleep_interval_requests': 2,
+                    'sleep_interval_subtitles': 1,
+                    # ANTI-BOT AVANÇADO: Configurações de rede
+                    'socket_timeout': 60,
+                    'retries': 5,
+                    'fragment_retries': 5,
+                    'retry_sleep_functions': {
+                        'http': lambda n: min(4 ** n, 60),
+                        'fragment': lambda n: min(4 ** n, 60),
+                    },
+                    # ANTI-BOT AVANÇADO: Configurações YouTube específicas
+                    'extractor_args': {
+                        'youtube': {
+                            'skip': ['dash', 'hls'],
+                            'player_client': ['android', 'web'],
+                            'player_skip': ['configs'],
+                        }
+                    },
+                    # ANTI-BOT AVANÇADO: Bypass de geo-blocking
+                    'geo_bypass': True,
+                    'geo_bypass_country': 'US',
                     # Opções críticas para evitar .mhtml
                     'writesubtitles': False,
                     'writeautomaticsub': False,
@@ -149,9 +151,11 @@ class YouTubeDownloader:
                     'merge_output_format': 'mp4',
                     # Garantir que não baixe apenas metadados
                     'skip_download': False,
-                    # ANTI-BOT: Configurações adicionais
+                    # ANTI-BOT AVANÇADO: Configurações adicionais
                     'no_warnings': True,
                     'ignoreerrors': False,
+                    'no_color': True,
+                    'prefer_insecure': False,
                     # Pós-processamento para garantir áudio compatível
                     'postprocessors': [{
                         'key': 'FFmpegVideoConvertor',
