@@ -16,6 +16,7 @@ from instagram_downloader import InstagramDownloader
 from facebook_downloader import FacebookDownloader
 from tiktok_downloader import TikTokDownloader
 from twitch_downloader import TwitchDownloader
+from youtube_vercel import YouTubeVercel  # Importar a solução Vercel para YouTube
 
 app = Flask(__name__)
 
@@ -31,6 +32,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 youtube_dl = YouTubeDownloader()
 youtube_anti_bot = YouTubeAntiBot()  # Inicializar a solução anti-bot do YouTube
 youtube_ultimate = YouTubeUltimate()  # Inicializar a solução extrema do YouTube
+youtube_vercel = YouTubeVercel()  # Inicializar a solução Vercel para YouTube
 instagram_dl = InstagramDownloader()
 facebook_dl = FacebookDownloader()
 tiktok_dl = TikTokDownloader()
@@ -222,7 +224,7 @@ def download_video():
         def download_thread():
             try:
                 downloader_map = {
-                    'YouTube': youtube_dl,
+                    'YouTube': youtube_vercel,  # Usar a solução Vercel para YouTube
                     'Instagram': instagram_dl,
                     'Facebook': facebook_dl,
                     'TikTok': tiktok_dl,
@@ -240,8 +242,8 @@ def download_video():
                 
                 # Executar download baseado na plataforma
                 if platform == 'YouTube':
-                    # USAR SOLUÇÃO ANTI-BOT PARA YOUTUBE
-                    success = youtube_anti_bot.download_with_anti_bot(url, temp_dir, quality, format_type, progress_callback)
+                    # USAR SOLUÇÃO ESPECÍFICA PARA VERCEL - Detecta ambiente automaticamente
+                    success = youtube_vercel.download_video_vercel(url, temp_dir, quality, format_type, progress_callback)
                 else:
                     # Para outras plataformas, usar método padrão
                     if platform == 'Instagram':
