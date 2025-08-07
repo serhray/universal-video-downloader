@@ -332,6 +332,114 @@ def download_video():
     except Exception as e:
         return jsonify({'success': False, 'message': f'Erro ao iniciar download: {str(e)}'})
 
+@app.route('/download', methods=['POST'])
+def download_endpoint():
+    """Endpoint HTTP para download (compatível com Vercel sem WebSocket)"""
+    print(f"🚀 HTTP DOWNLOAD INICIADO")
+    
+    try:
+        data = request.get_json()
+        print(f"🔍 DEBUG - Dados recebidos: {data}")
+        
+        url = data.get('url')
+        quality = data.get('quality', 'best')
+        format_type = data.get('format', 'mp4')
+        
+        print(f"🔍 DEBUG - URL: {url}")
+        print(f"🔍 DEBUG - Quality: {quality}")
+        print(f"🔍 DEBUG - Format: {format_type}")
+        
+        if not url:
+            print(f"❌ DEBUG - URL não fornecida!")
+            return jsonify({'error': 'URL não fornecida'}), 400
+        
+        # Validar URL
+        platform = validate_url(url)
+        print(f"🔍 DEBUG - Plataforma detectada: {platform}")
+        
+        if not platform:
+            print(f"❌ DEBUG - Plataforma não suportada para URL: {url}")
+            return jsonify({'error': 'URL não suportada'}), 400
+        
+        print(f"✅ DEBUG - Validação OK, iniciando download direto...")
+        
+        # Download direto sem WebSocket
+        download_id = str(uuid.uuid4())
+        temp_dir = os.path.join('downloads', download_id)
+        os.makedirs(temp_dir, exist_ok=True)
+        
+        print(f"🔍 DEBUG - Download ID: {download_id}")
+        print(f"🔍 DEBUG - Temp dir: {temp_dir}")
+        
+        # Mapeamento de downloaders
+        downloader_map = {
+            'YouTube': youtube_vercel,
+            'Instagram': instagram_dl,
+            'Facebook': facebook_dl,
+            'TikTok': tiktok_dl,
+            'Twitch': twitch_vercel
+        }
+        
+        downloader = downloader_map.get(platform)
+        print(f"🔍 DEBUG - Downloader selecionado: {type(downloader).__name__ if downloader else 'None'}")
+        
+        if not downloader:
+            print(f"❌ DEBUG - Downloader não encontrado para {platform}")
+            return jsonify({'error': 'Plataforma não suportada'}), 400
+        
+        # Executar download específico para cada plataforma
+        success = False
+        
+        if platform == 'Twitch':
+            print(f"🎮 INICIANDO DOWNLOAD DA TWITCH VIA HTTP...")
+            print(f"🔍 DEBUG - Downloader usado: {type(downloader).__name__}")
+            print(f"🔍 DEBUG - Método disponível: {hasattr(downloader, 'download_video')}")
+            
+            if hasattr(downloader, 'download_video'):
+                print(f"✅ DEBUG - Método download_video encontrado, chamando...")
+                success = downloader.download_video(url, temp_dir, None)  # Sem progress_hook
+                print(f"🔍 DEBUG - Resultado do download: {success}")
+            else:
+                print(f"❌ DEBUG - Método download_video NÃO encontrado!")
+                success = False
+        else:
+            # Outras plataformas
+            if hasattr(downloader, 'download_video'):
+                success = downloader.download_video(url, temp_dir, None)
+            elif hasattr(downloader, 'download_post'):
+                success = downloader.download_post(url, temp_dir, None)
+        
+        print(f"🔍 DEBUG - Resultado final do download: {success}")
+        
+        if success:
+            # Listar arquivos baixados
+            files = []
+            for file in os.listdir(temp_dir):
+                file_path = os.path.join(temp_dir, file)
+                if os.path.isfile(file_path):
+                    files.append({
+                        'name': file,
+                        'size': os.path.getsize(file_path),
+                        'download_url': f'/download_file/{download_id}/{file}'
+                    })
+            
+            print(f"✅ DEBUG - Download concluído! Arquivos: {len(files)}")
+            return jsonify({
+                'success': True,
+                'download_id': download_id,
+                'files': files,
+                'message': 'Download concluído com sucesso!'
+            })
+        else:
+            print(f"❌ DEBUG - Download falhou!")
+            return jsonify({'error': 'Falha no download'}), 500
+            
+    except Exception as e:
+        print(f"❌ ERRO no endpoint HTTP: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Erro interno: {str(e)}'}), 500
+
 @app.route('/api/download_file/<download_id>')
 def download_file(download_id):
     """Baixar arquivo após conclusão"""
