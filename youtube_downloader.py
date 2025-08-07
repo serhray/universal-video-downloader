@@ -1,26 +1,21 @@
-import yt_dlp
 import os
-import re
+import yt_dlp
+import random
 from pathlib import Path
 
 class YouTubeDownloader:
     def __init__(self):
-        # Configuração base ultra-simples
-        self.ydl_opts_base = {
-            'outtmpl': '%(title)s.%(ext)s',
-            'noplaylist': True,
-            'extract_flat': False,
-            # Opções críticas para evitar .mhtml
-            'writesubtitles': False,
-            'writeautomaticsub': False,
-            'writedescription': False,
-            'writeinfojson': False,
-            'writethumbnail': False,
-            'writewebvtt': False,
-            'writedesktoplink': False,
-            'writeurllink': False,
-            'writeannotations': False,
-        }
+        self.name = "YouTube"
+        # Lista de User-Agents rotativos para evitar detecção
+        self.user_agents = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            # Mobile User-Agents (menos detectáveis)
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+            'Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+        ]
     
     def get_video_info(self, url):
         """Obter informações detalhadas do vídeo sem baixar"""
@@ -97,7 +92,7 @@ class YouTubeDownloader:
                     'progress_hooks': [progress_hook] if progress_hook else [],
                     # ANTI-BOT AVANÇADO: Headers HTTP realistas
                     'http_headers': {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'User-Agent': random.choice(self.user_agents),
                         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
                         'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
                         'Accept-Encoding': 'gzip, deflate, br',

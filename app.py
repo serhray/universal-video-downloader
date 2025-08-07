@@ -10,6 +10,7 @@ import time
 
 # Importar downloaders existentes
 from youtube_downloader import YouTubeDownloader
+from youtube_anti_bot import YouTubeAntiBot
 from instagram_downloader import InstagramDownloader
 from facebook_downloader import FacebookDownloader
 from tiktok_downloader import TikTokDownloader
@@ -27,6 +28,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Inicializar downloaders
 youtube_dl = YouTubeDownloader()
+youtube_anti_bot = YouTubeAntiBot()  # Inicializar a solução anti-bot do YouTube
 instagram_dl = InstagramDownloader()
 facebook_dl = FacebookDownloader()
 tiktok_dl = TikTokDownloader()
@@ -236,7 +238,8 @@ def download_video():
                 
                 # Executar download baseado na plataforma
                 if platform == 'YouTube':
-                    success = downloader.download_video(url, temp_dir, quality, format_type, progress_callback)
+                    # USAR SOLUÇÃO ANTI-BOT PARA YOUTUBE
+                    success = youtube_anti_bot.download_with_anti_bot(url, temp_dir, quality, format_type, progress_callback)
                 else:
                     # Para outras plataformas, usar método padrão
                     if platform == 'Instagram':
