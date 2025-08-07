@@ -251,6 +251,77 @@ class TwitchVercel:
         return config
     
     def download_video(self, url, output_path, progress_hook=None):
+        """
+        Método principal para download de vídeos da Twitch no Vercel
+        Compatível com a interface esperada pelo app.py
+        """
+        try:
+            print(f"🎮 TwitchVercel.download_video() chamado")
+            print(f"🔍 URL: {url}")
+            print(f"📁 Output: {output_path}")
+            
+            # Detectar ambiente
+            env_type = "VERCEL" if self.is_vercel else "LOCAL"
+            print(f"🔍 DEBUG EXTREMO - Ambiente detectado: {env_type}")
+            
+            # Obter configuração otimizada
+            config = self.get_vercel_config(progress_hook)
+            
+            # Configurar diretório de saída
+            config['outtmpl'] = os.path.join(output_path, '%(title)s.%(ext)s')
+            
+            # Log COMPLETO da configuração
+            print(f"🎮 Twitch Download - Ambiente: {env_type}")
+            print(f"📱 User-Agent: {config['http_headers']['User-Agent'][:50]}...")
+            print(f"⏱️ Timeout: {config['socket_timeout']}s")
+            print(f"🔄 Retries: {config['retries']}")
+            print(f"🌍 País: {config['geo_bypass_country']}")
+            print(f"🔍 DEBUG - Formato: {config['format']}")
+            print(f"🔍 DEBUG - Ignorar erros: {config.get('ignoreerrors', False)}")
+            
+            # Teste de conectividade básica
+            print(f"🔍 DEBUG - Testando conectividade com Twitch...")
+            import urllib.request
+            try:
+                urllib.request.urlopen('https://www.twitch.tv', timeout=10)
+                print(f"✅ DEBUG - Conectividade com Twitch OK")
+            except Exception as conn_e:
+                print(f"❌ DEBUG - Erro de conectividade: {conn_e}")
+            
+            # Executar download com logs EXTREMOS
+            print(f"🚀 INICIANDO download da Twitch no ambiente {env_type}...")
+            print(f"🔍 DEBUG - Criando instância yt-dlp...")
+            
+            with yt_dlp.YoutubeDL(config) as ydl:
+                print(f"✅ DEBUG - yt-dlp instanciado com sucesso")
+                print(f"🔍 DEBUG - Iniciando extração de informações...")
+                
+                # Primeiro, tentar extrair informações
+                try:
+                    info = ydl.extract_info(url, download=False)
+                    print(f"✅ DEBUG - Informações extraídas com sucesso")
+                    print(f"🔍 DEBUG - Título: {info.get('title', 'N/A')}")
+                    print(f"🔍 DEBUG - Duração: {info.get('duration', 'N/A')}")
+                except Exception as info_e:
+                    print(f"❌ DEBUG - Erro na extração de informações: {info_e}")
+                    raise info_e
+                
+                # Agora tentar o download
+                print(f"🔍 DEBUG - Iniciando download efetivo...")
+                ydl.download([url])
+                print(f"✅ DEBUG - Download concluído sem erros")
+                print(f"✅ Download da Twitch concluído no ambiente {env_type}")
+                
+                return True
+                
+        except Exception as e:
+            print(f"❌ TwitchVercel.download_video() ERRO: {str(e)}")
+            import traceback
+            print(f"🔍 DEBUG - Traceback completo:")
+            traceback.print_exc()
+            return False
+
+    def download_video_vercel(self, url, output_path, progress_hook=None):
         """Download otimizado para Twitch no Vercel"""
         
         try:
@@ -301,7 +372,7 @@ class TwitchVercel:
             print(f"🔍 DEBUG - Criando instância yt-dlp...")
             
             with yt_dlp.YoutubeDL(config) as ydl:
-                print(f"� DEBUG - yt-dlp instanciado com sucesso")
+                print(f"✅ DEBUG - yt-dlp instanciado com sucesso")
                 print(f"🔍 DEBUG - Iniciando extração de informações...")
                 
                 # Primeiro, tentar extrair informações
@@ -317,11 +388,11 @@ class TwitchVercel:
                 # Agora tentar o download
                 print(f"🔍 DEBUG - Iniciando download efetivo...")
                 ydl.download([url])
-                print(f"🔍 DEBUG - Download concluído sem erros")
+                print(f"✅ DEBUG - Download concluído sem erros")
+                print(f"✅ Download da Twitch concluído no ambiente {env_type}")
                 
-            print(f"✅ Download da Twitch concluído no ambiente {env_type}")
-            return True
-            
+                return True
+                
         except Exception as e:
             print(f"❌ ERRO DETALHADO no download da Twitch: {str(e)}")
             print(f"🔍 DEBUG - Tipo do erro: {type(e).__name__}")
