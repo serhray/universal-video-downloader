@@ -252,6 +252,9 @@ def download_video():
                         success = downloader.download_video(url, temp_dir, progress_callback)
                     elif platform == 'TikTok':
                         success = downloader.download_video(url, temp_dir, progress_callback)
+                    elif platform == 'Twitch':
+                        # CORRIGIR: Adicionar chamada para Twitch
+                        success = downloader.download_segment(url, temp_dir, progress_callback)
                     else:
                         success = False
                 
