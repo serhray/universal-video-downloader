@@ -76,6 +76,26 @@ class YouTubeDownloader:
                     'writedescription': False,
                     'writeinfojson': False,
                     'writethumbnail': False,
+                    # ANTI-BOT: Headers HTTP realistas
+                    'http_headers': {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                        'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'DNT': '1',
+                        'Connection': 'keep-alive',
+                        'Upgrade-Insecure-Requests': '1',
+                    },
+                    # ANTI-BOT: Rate limiting e delays
+                    'sleep_interval': 1,
+                    'max_sleep_interval': 3,
+                    'sleep_interval_requests': 1,
+                    # ANTI-BOT: Configurações de rede
+                    'socket_timeout': 30,
+                    'retries': 3,
+                    # ANTI-BOT: Configurações adicionais
+                    'no_warnings': True,
+                    'ignoreerrors': False,
                 }
             else:
                 # Para vídeo - SELETORES OTIMIZADOS (máxima qualidade + áudio compatível)
@@ -95,6 +115,23 @@ class YouTubeDownloader:
                     'outtmpl': output_template,
                     'format': format_selector,
                     'progress_hooks': [progress_hook] if progress_hook else [],
+                    # ANTI-BOT: Headers HTTP realistas
+                    'http_headers': {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                        'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'DNT': '1',
+                        'Connection': 'keep-alive',
+                        'Upgrade-Insecure-Requests': '1',
+                    },
+                    # ANTI-BOT: Rate limiting e delays
+                    'sleep_interval': 1,
+                    'max_sleep_interval': 3,
+                    'sleep_interval_requests': 1,
+                    # ANTI-BOT: Configurações de rede
+                    'socket_timeout': 30,
+                    'retries': 3,
                     # Opções críticas para evitar .mhtml
                     'writesubtitles': False,
                     'writeautomaticsub': False,
@@ -112,6 +149,9 @@ class YouTubeDownloader:
                     'merge_output_format': 'mp4',
                     # Garantir que não baixe apenas metadados
                     'skip_download': False,
+                    # ANTI-BOT: Configurações adicionais
+                    'no_warnings': True,
+                    'ignoreerrors': False,
                     # Pós-processamento para garantir áudio compatível
                     'postprocessors': [{
                         'key': 'FFmpegVideoConvertor',
