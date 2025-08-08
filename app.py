@@ -437,7 +437,7 @@ def download_endpoint():
                     files.append({
                         'name': file,
                         'size': os.path.getsize(file_path),
-                        'download_url': f'/download_file/{download_id}/{file}'
+                        'download_url': f'/api/download_file/{download_id}'
                     })
             
             print(f"✅ DEBUG - Download concluído! Arquivos: {len(files)}")
