@@ -282,7 +282,7 @@ class VideoDownloaderApp {
         this.updateProgress(0, 'starting');
         
         try {
-            const response = await fetch('/api/download', {
+            const response = await fetch('/download', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url, platform, quality, format })
