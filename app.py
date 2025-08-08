@@ -375,13 +375,18 @@ def download_endpoint():
         
         print(f"✅ DEBUG - Validação OK, iniciando download direto...")
         
-        # Download direto sem WebSocket
+        # Download direto sem WebSocket - USAR DIRETÓRIO TEMPORÁRIO CORRETO
         download_id = str(uuid.uuid4())
-        temp_dir = os.path.join('downloads', download_id)
-        os.makedirs(temp_dir, exist_ok=True)
+        
+        # CORREÇÃO: Usar diretório temporário do sistema em vez de 'downloads/'
+        # No Vercel, apenas /tmp é writeable
+        import tempfile
+        temp_dir = tempfile.mkdtemp(prefix=f'download_{download_id}_')
         
         print(f"🔍 DEBUG - Download ID: {download_id}")
         print(f"🔍 DEBUG - Temp dir: {temp_dir}")
+        print(f"🔍 DEBUG - Temp dir exists: {os.path.exists(temp_dir)}")
+        print(f"🔍 DEBUG - Temp dir writable: {os.access(temp_dir, os.W_OK)}")
         
         # Mapeamento de downloaders
         downloader_map = {
