@@ -178,8 +178,20 @@ class TwitchVercel:
     """Configuração específica para Twitch no ambiente Vercel"""
     
     def __init__(self):
-        # Detectar se está no Vercel
-        self.is_vercel = os.environ.get('VERCEL') == '1' or os.environ.get('VERCEL_ENV') is not None
+        # CORREÇÃO: Detecção de ambiente melhorada
+        self.is_vercel = (
+            os.environ.get('VERCEL') == '1' or 
+            os.environ.get('VERCEL_ENV') is not None or
+            os.environ.get('VERCEL_URL') is not None or
+            'vercel' in os.environ.get('HOSTNAME', '').lower() or
+            'vercel' in os.environ.get('NOW_REGION', '').lower()
+        )
+        
+        print(f"🔍 DEBUG - TwitchVercel inicializada")
+        print(f"🔍 DEBUG - Ambiente Vercel detectado: {self.is_vercel}")
+        print(f"🔍 DEBUG - VERCEL env: {os.environ.get('VERCEL', 'NOT_SET')}")
+        print(f"🔍 DEBUG - VERCEL_ENV env: {os.environ.get('VERCEL_ENV', 'NOT_SET')}")
+        print(f"🔍 DEBUG - VERCEL_URL env: {os.environ.get('VERCEL_URL', 'NOT_SET')}")
         
         # User-Agents otimizados para Vercel
         self.vercel_user_agents = [
@@ -194,39 +206,41 @@ class TwitchVercel:
         ]
         
         # Países com menor detecção
-        self.safe_countries = ['CA', 'AU', 'NL', 'DE']
+        self.safe_countries = ['CA', 'AU', 'NL', 'DE', 'US']
     
     def get_vercel_config(self, progress_hook=None):
         """Configuração otimizada para Twitch no Vercel"""
         
-        # Configurações mais agressivas para Vercel
+        # CORREÇÃO: Configurações menos restritivas para Vercel
         if self.is_vercel:
-            timeout = 30  # Timeout menor para Vercel
-            retries = 5   # Menos retries no Vercel
+            timeout = 60  # CORREÇÃO: Aumentar timeout para Vercel (era 30s)
+            retries = 8   # CORREÇÃO: Mais retries no Vercel (era 5)
             user_agent = random.choice(self.vercel_user_agents)
             country = random.choice(self.safe_countries)
+            print(f"🔍 DEBUG - Configuração VERCEL aplicada")
         else:
-            timeout = 60  # Timeout maior para localhost
-            retries = 8   # Mais retries no localhost
+            timeout = 90  # Timeout ainda maior para localhost
+            retries = 10  # Mais retries no localhost
             user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             country = 'US'
+            print(f"🔍 DEBUG - Configuração LOCAL aplicada")
         
         config = {
             'format': 'best[ext=mp4]/best',  # Preferir MP4
             'writeinfojson': False,
             'writesubtitles': False,
             'writeautomaticsub': False,
-            'ignoreerrors': False,
+            'ignoreerrors': True,  # CORREÇÃO: Ignorar erros menores
             'no_warnings': False,
             'embed_subs': False,
             
-            # Configurações de rede otimizadas
+            # CORREÇÃO: Configurações de rede menos restritivas
             'socket_timeout': timeout,
             'retries': retries,
             'fragment_retries': retries,
             'retry_sleep_functions': {
-                'http': lambda n: min(2 ** n, 30),
-                'fragment': lambda n: min(2 ** n, 30),
+                'http': lambda n: min(2 ** n, 60),  # CORREÇÃO: Aumentar sleep máximo
+                'fragment': lambda n: min(2 ** n, 60),
             },
             
             # Headers otimizados para Twitch
@@ -237,16 +251,20 @@ class TwitchVercel:
                 'Accept-Encoding': 'gzip, deflate',
                 'DNT': '1',
                 'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1',  # CORREÇÃO: Header adicional
             },
             
-            # Geo-bypass para Twitch
+            # CORREÇÃO: Geo-bypass mais flexível
             'geo_bypass': True,
             'geo_bypass_country': country,
+            'geo_verification_proxy': None,  # CORREÇÃO: Sem proxy de verificação
         }
         
         # Adicionar hook de progresso se fornecido
         if progress_hook:
             config['progress_hooks'] = [progress_hook]
+        
+        print(f"🔍 DEBUG - Configuração final: timeout={timeout}s, retries={retries}, país={country}")
         
         return config
     
@@ -319,94 +337,4 @@ class TwitchVercel:
             import traceback
             print(f"🔍 DEBUG - Traceback completo:")
             traceback.print_exc()
-            return False
-
-    def download_video_vercel(self, url, output_path, progress_hook=None):
-        """Download otimizado para Twitch no Vercel"""
-        
-        try:
-            # Debug EXTREMO: Log detalhado do ambiente
-            env_type = "VERCEL" if self.is_vercel else "LOCALHOST"
-            print(f"🔍 DEBUG EXTREMO - Ambiente detectado: {env_type}")
-            print(f"🔍 DEBUG - VERCEL env var: {os.environ.get('VERCEL', 'NOT_SET')}")
-            print(f"🔍 DEBUG - VERCEL_ENV env var: {os.environ.get('VERCEL_ENV', 'NOT_SET')}")
-            print(f"🔍 DEBUG - NODE_ENV env var: {os.environ.get('NODE_ENV', 'NOT_SET')}")
-            print(f"🔍 DEBUG - URL da Twitch: {url}")
-            print(f"🔍 DEBUG - Output path: {output_path}")
-            
-            # Verificar se URL é válida
-            if not url or not url.startswith('https://'):
-                raise ValueError(f"URL inválida: {url}")
-            
-            # Criar diretório com debug
-            print(f"🔍 DEBUG - Criando diretório: {output_path}")
-            Path(output_path).mkdir(parents=True, exist_ok=True)
-            output_template = os.path.join(output_path, '%(uploader)s_%(title)s.%(ext)s')
-            print(f"🔍 DEBUG - Template de saída: {output_template}")
-            
-            # Configuração base com debug
-            print(f"🔍 DEBUG - Obtendo configuração para ambiente: {env_type}")
-            config = self.get_vercel_config(progress_hook)
-            config['outtmpl'] = output_template
-            
-            # Log COMPLETO da configuração
-            print(f"🎮 Twitch Download - Ambiente: {env_type}")
-            print(f"📱 User-Agent: {config['http_headers']['User-Agent'][:50]}...")
-            print(f"⏱️ Timeout: {config['socket_timeout']}s")
-            print(f"🔄 Retries: {config['retries']}")
-            print(f"🌍 País: {config['geo_bypass_country']}")
-            print(f"🔍 DEBUG - Formato: {config['format']}")
-            print(f"🔍 DEBUG - Ignorar erros: {config.get('ignoreerrors', False)}")
-            
-            # Teste de conectividade básica
-            print(f"🔍 DEBUG - Testando conectividade com Twitch...")
-            import urllib.request
-            try:
-                urllib.request.urlopen('https://www.twitch.tv', timeout=10)
-                print(f"✅ DEBUG - Conectividade com Twitch OK")
-            except Exception as conn_e:
-                print(f"❌ DEBUG - Erro de conectividade: {conn_e}")
-            
-            # Executar download com logs EXTREMOS
-            print(f"🚀 INICIANDO download da Twitch no ambiente {env_type}...")
-            print(f"🔍 DEBUG - Criando instância yt-dlp...")
-            
-            with yt_dlp.YoutubeDL(config) as ydl:
-                print(f"✅ DEBUG - yt-dlp instanciado com sucesso")
-                print(f"🔍 DEBUG - Iniciando extração de informações...")
-                
-                # Primeiro, tentar extrair informações
-                try:
-                    info = ydl.extract_info(url, download=False)
-                    print(f"✅ DEBUG - Informações extraídas com sucesso")
-                    print(f"🔍 DEBUG - Título: {info.get('title', 'N/A')}")
-                    print(f"🔍 DEBUG - Duração: {info.get('duration', 'N/A')}")
-                except Exception as info_e:
-                    print(f"❌ DEBUG - Erro na extração de informações: {info_e}")
-                    raise info_e
-                
-                # Agora tentar o download
-                print(f"🔍 DEBUG - Iniciando download efetivo...")
-                ydl.download([url])
-                print(f"✅ DEBUG - Download concluído sem erros")
-                print(f"✅ Download da Twitch concluído no ambiente {env_type}")
-                
-                return True
-                
-        except Exception as e:
-            print(f"❌ ERRO DETALHADO no download da Twitch: {str(e)}")
-            print(f"🔍 DEBUG - Tipo do erro: {type(e).__name__}")
-            print(f"🔍 DEBUG - Argumentos do erro: {e.args}")
-            
-            # Traceback completo
-            import traceback
-            print(f"🔍 DEBUG - Traceback completo:")
-            traceback.print_exc()
-            
-            # Informações do sistema
-            import sys, platform
-            print(f"🔍 DEBUG - Python version: {sys.version}")
-            print(f"🔍 DEBUG - Platform: {platform.platform()}")
-            print(f"🔍 DEBUG - Working directory: {os.getcwd()}")
-            
             return False
