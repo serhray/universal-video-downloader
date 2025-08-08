@@ -510,41 +510,54 @@ def download_file_endpoint(download_id, filename):
 
 @app.route('/api/download_file/<download_id>')
 def download_file(download_id):
-    """Baixar arquivo após conclusão"""
+    """Baixar arquivo após conclusão - VERSÃO ATUALIZADA PARA VERCEL"""
+    print(f"📥 DOWNLOAD FILE API - ID: {download_id}")
+    
     try:
-        if download_id not in active_downloads:
+        # NOVA LÓGICA: Procurar arquivo no diretório temporário (compatível com Vercel)
+        import tempfile
+        import glob
+        
+        # Buscar diretório temporário com o download_id
+        temp_pattern = os.path.join(tempfile.gettempdir(), f'download_{download_id}_*')
+        temp_dirs = glob.glob(temp_pattern)
+        
+        print(f"🔍 DEBUG API - Padrão de busca: {temp_pattern}")
+        print(f"🔍 DEBUG API - Diretórios encontrados: {len(temp_dirs)}")
+        
+        if not temp_dirs:
+            print(f"❌ DEBUG API - Diretório temporário não encontrado para ID: {download_id}")
             return jsonify({'error': 'Download não encontrado'}), 404
         
-        download_info = active_downloads[download_id]
+        temp_dir = temp_dirs[0]
+        files = os.listdir(temp_dir) if os.path.exists(temp_dir) else []
         
-        if download_info['status'] != 'completed':
-            return jsonify({'error': 'Download não concluído'}), 400
-        
-        temp_dir = download_info['temp_dir']
-        
-        # Encontrar arquivo baixado
-        files = []
-        for root, dirs, filenames in os.walk(temp_dir):
-            for filename in filenames:
-                if not filename.startswith('.'):  # Ignorar arquivos ocultos
-                    files.append(os.path.join(root, filename))
+        print(f"🔍 DEBUG API - Diretório: {temp_dir}")
+        print(f"🔍 DEBUG API - Arquivos disponíveis: {files}")
         
         if not files:
+            print(f"❌ DEBUG API - Nenhum arquivo encontrado")
             return jsonify({'error': 'Arquivo não encontrado'}), 404
         
-        # Pegar o primeiro arquivo (ou o maior se houver múltiplos)
-        file_path = max(files, key=os.path.getsize) if len(files) > 1 else files[0]
+        # Usar o primeiro arquivo encontrado (ou o maior se houver múltiplos)
+        if len(files) > 1:
+            # Pegar o maior arquivo
+            file_sizes = [(f, os.path.getsize(os.path.join(temp_dir, f))) for f in files]
+            filename = max(file_sizes, key=lambda x: x[1])[0]
+        else:
+            filename = files[0]
         
-        return send_file(
-            file_path,
-            as_attachment=True,
-            download_name=os.path.basename(file_path)
-        )
+        file_path = os.path.join(temp_dir, filename)
+        
+        print(f"✅ DEBUG API - Servindo arquivo: {file_path} ({os.path.getsize(file_path)} bytes)")
+        return send_file(file_path, as_attachment=True, download_name=filename)
         
     except Exception as e:
-        return jsonify({'error': f'Erro ao baixar arquivo: {str(e)}'}), 500
+        print(f"❌ ERRO no download_file API: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Erro no download: {str(e)}'}), 500
 
-# Rotas específicas do Twitch
 @app.route('/api/twitch/search_vods', methods=['POST'])
 def search_twitch_vods():
     """Buscar VODs do Twitch por usuário"""
