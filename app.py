@@ -43,6 +43,40 @@ twitch_dl = TwitchDownloader()
 # Armazenar sessões de download ativas
 active_downloads = {}
 
+# Função para validar URL e detectar plataforma
+def validate_url(url):
+    """
+    Valida URL e retorna a plataforma correspondente
+    """
+    if not url:
+        return None
+    
+    url = url.lower()
+    
+    # YouTube
+    if 'youtube.com' in url or 'youtu.be' in url:
+        return 'YouTube'
+    
+    # Instagram
+    elif 'instagram.com' in url:
+        return 'Instagram'
+    
+    # Facebook
+    elif 'facebook.com' in url or 'fb.watch' in url:
+        return 'Facebook'
+    
+    # TikTok
+    elif 'tiktok.com' in url:
+        return 'TikTok'
+    
+    # Twitch
+    elif 'twitch.tv' in url:
+        return 'Twitch'
+    
+    # URL não suportada
+    else:
+        return None
+
 @app.route('/')
 def index():
     """Página principal"""
@@ -63,43 +97,21 @@ def terms_of_service():
     return render_template('terms-of-service.html', current_date=current_date)
 
 @app.route('/api/validate_url', methods=['POST'])
-def validate_url():
+def validate_url_api():
     """Validar URL de qualquer plataforma"""
     try:
         data = request.get_json()
         url = data.get('url', '').strip()
-        platform = data.get('platform', '')
+        platform = validate_url(url)
         
-        if not url:
-            return jsonify({'valid': False, 'message': 'URL não fornecida'})
+        if not platform:
+            return jsonify({'valid': False, 'message': 'URL não suportada'})
         
-        # Selecionar downloader baseado na plataforma
-        downloader_map = {
-            'YouTube': youtube_dl,
-            'Instagram': instagram_dl,
-            'Facebook': facebook_dl,
-            'TikTok': tiktok_dl,
-            'Twitch': twitch_dl
-        }
-        
-        downloader = downloader_map.get(platform)
-        if not downloader:
-            return jsonify({'valid': False, 'message': 'Plataforma não suportada'})
-        
-        # Validar URL
-        is_valid = downloader.validate_url(url)
-        
-        if is_valid:
-            return jsonify({
-                'valid': True, 
-                'message': f'URL do {platform} válida',
-                'platform': platform
-            })
-        else:
-            return jsonify({
-                'valid': False, 
-                'message': f'URL inválida para {platform}'
-            })
+        return jsonify({
+            'valid': True, 
+            'message': f'URL válida para {platform}',
+            'platform': platform
+        })
             
     except Exception as e:
         return jsonify({'valid': False, 'message': f'Erro na validação: {str(e)}'})
