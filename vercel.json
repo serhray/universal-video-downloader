@@ -1,7 +1,13 @@
 {
   "functions": {
-    "app.py": {
+    "wsgi.py": {
       "runtime": "python3.9"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/wsgi"
+    }
+  ]
 }
