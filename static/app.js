@@ -17,8 +17,7 @@ class VideoDownloaderApp {
         this.currentDownloadId = null;
         this.selectedVod = null;
         this.vods = [];
-        this.downloadFiles = []; // Adicionar propriedade para armazenar arquivos
-        
+        this.downloadFiles = []; // Adicionar após this.vods = [];        
         this.initializeElements();
         this.bindEvents();
         

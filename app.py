@@ -457,6 +457,57 @@ def download_endpoint():
         traceback.print_exc()
         return jsonify({'error': f'Erro interno: {str(e)}'}), 500
 
+@app.route('/download_file/<download_id>/<filename>')
+def download_file_endpoint(download_id, filename):
+    """Endpoint para download de arquivo específico"""
+    print(f"📥 DOWNLOAD FILE ENDPOINT - ID: {download_id}, File: {filename}")
+    
+    try:
+        # Procurar arquivo no diretório temporário
+        import tempfile
+        import glob
+        
+        # Buscar diretório temporário com o download_id
+        temp_pattern = os.path.join(tempfile.gettempdir(), f'download_{download_id}_*')
+        temp_dirs = glob.glob(temp_pattern)
+        
+        print(f"🔍 DEBUG - Padrão de busca: {temp_pattern}")
+        print(f"🔍 DEBUG - Diretórios encontrados: {len(temp_dirs)}")
+        
+        if not temp_dirs:
+            print(f"❌ DEBUG - Diretório temporário não encontrado para ID: {download_id}")
+            return jsonify({'error': 'Download não encontrado'}), 404
+        
+        temp_dir = temp_dirs[0]
+        file_path = os.path.join(temp_dir, filename)
+        
+        print(f"🔍 DEBUG - Diretório temporário: {temp_dir}")
+        print(f"🔍 DEBUG - Caminho do arquivo: {file_path}")
+        print(f"🔍 DEBUG - Arquivo existe: {os.path.exists(file_path)}")
+        
+        if not os.path.exists(file_path):
+            # Tentar encontrar qualquer arquivo no diretório
+            files = os.listdir(temp_dir) if os.path.exists(temp_dir) else []
+            print(f"🔍 DEBUG - Arquivos disponíveis: {files}")
+            
+            if files:
+                # Usar o primeiro arquivo encontrado
+                actual_filename = files[0]
+                file_path = os.path.join(temp_dir, actual_filename)
+                print(f"✅ DEBUG - Usando arquivo encontrado: {actual_filename}")
+            else:
+                print(f"❌ DEBUG - Nenhum arquivo encontrado no diretório")
+                return jsonify({'error': 'Arquivo não encontrado'}), 404
+        
+        print(f"✅ DEBUG - Servindo arquivo: {file_path}")
+        return send_file(file_path, as_attachment=True, download_name=filename)
+        
+    except Exception as e:
+        print(f"❌ ERRO no download_file_endpoint: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Erro no download: {str(e)}'}), 500
+
 @app.route('/api/download_file/<download_id>')
 def download_file(download_id):
     """Baixar arquivo após conclusão"""
