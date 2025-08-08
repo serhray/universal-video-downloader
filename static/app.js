@@ -1,19 +1,36 @@
 // Universal Video Downloader Web App - Frontend JavaScript
 class VideoDownloaderApp {
     constructor() {
-        this.socket = io();
+        // Detectar se está no ambiente Vercel
+        this.isVercel = window.location.hostname.includes('vercel.app') || 
+                       window.location.hostname.includes('vercel.com');
+        
+        // Inicializar WebSocket apenas se não estiver no Vercel
+        if (!this.isVercel) {
+            this.socket = io();
+            this.setupWebSocket();
+        } else {
+            this.socket = null;
+            console.log(' Ambiente Vercel detectado - WebSocket desabilitado');
+        }
+        
         this.currentDownloadId = null;
         this.selectedVod = null;
         this.vods = [];
+        this.downloadFiles = []; // Adicionar propriedade para armazenar arquivos
         
         this.initializeElements();
         this.bindEvents();
-        this.setupWebSocket();
         
         // Apply default theme
         this.applyPlatformTheme('YouTube');
         
         this.log(' Aplicação web carregada');
+        if (this.isVercel) {
+            this.log(' Modo Vercel: usando HTTP direto');
+        } else {
+            this.log(' Modo local: usando WebSocket');
+        }
         this.log(' Sistema de temas ativado');
         this.log(' Selecione uma plataforma e cole a URL para começar');
     }
@@ -282,6 +299,12 @@ class VideoDownloaderApp {
         this.updateProgress(0, 'starting');
         
         try {
+            // Mostrar progresso simulado no Vercel
+            if (this.isVercel) {
+                this.log(' Processando download no servidor...');
+                this.updateProgress(50, 'processing');
+            }
+            
             const response = await fetch('/download', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -292,11 +315,27 @@ class VideoDownloaderApp {
             
             if (data.success) {
                 this.currentDownloadId = data.download_id;
+                this.downloadFiles = data.files; // Armazenar arquivos para download
+                
                 this.log(` ${data.message}`);
                 this.log(` Plataforma: ${platform}`);
                 if (platform === 'YouTube') {
                     this.log(` Qualidade: ${quality}`);
                     this.log(` Formato: ${format}`);
+                }
+                
+                // Se estiver no Vercel, mostrar resultado correto
+                if (this.isVercel) {
+                    this.log(' Download concluído com sucesso!');
+                    this.updateProgress(100, 'completed');
+                    this.downloadFileBtn.style.display = 'block';
+                    
+                    // Mostrar informações dos arquivos
+                    if (data.files && data.files.length > 0) {
+                        data.files.forEach(file => {
+                            this.log(` Arquivo: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+                        });
+                    }
                 }
             } else {
                 this.log(` ${data.message}`);
@@ -494,13 +533,13 @@ class VideoDownloaderApp {
                         </div>
                         <div class="col-5">
                             <h6 class="mb-1">${vod.title}</h6>
-                            <small class="text-muted">📅 ${vod.upload_date}</small>
+                            <small class="text-muted"> ${vod.upload_date}</small>
                         </div>
                         <div class="col-2">
-                            <small>⏱️ ${vod.duration}</small>
+                            <small> ${vod.duration}</small>
                         </div>
                         <div class="col-1">
-                            <small>👁️ ${vod.view_count.toLocaleString()}</small>
+                            <small> ${vod.view_count.toLocaleString()}</small>
                         </div>
                     </div>
                 </div>
@@ -585,6 +624,13 @@ class VideoDownloaderApp {
                 if (customName) {
                     this.log(` Nome personalizado: ${customName}`);
                 }
+                
+                // Se estiver no Vercel, mostrar resultado correto
+                if (this.isVercel) {
+                    this.log(' Download concluído com sucesso!');
+                    this.updateProgress(100, 'completed');
+                    this.downloadFileBtn.style.display = 'block';
+                }
             } else {
                 this.log(` ${data.message}`);
                 this.showAlert(data.message, 'danger');
@@ -600,7 +646,13 @@ class VideoDownloaderApp {
     }
     
     downloadFile() {
-        if (this.currentDownloadId) {
+        if (this.isVercel && this.downloadFiles && this.downloadFiles.length > 0) {
+            // No Vercel, usar os arquivos da resposta HTTP
+            const file = this.downloadFiles[0]; // Pegar o primeiro arquivo
+            window.open(file.download_url, '_blank');
+            this.log(` Iniciando download: ${file.name}`);
+        } else if (this.currentDownloadId) {
+            // Modo local (WebSocket)
             window.open(`/api/download_file/${this.currentDownloadId}`, '_blank');
             this.log(' Iniciando download do arquivo');
         }
