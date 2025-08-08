@@ -611,13 +611,23 @@ if __name__ == '__main__':
     os.makedirs('static', exist_ok=True)
     
     print("🚀 Iniciando Universal Video Downloader Web App...")
-    print("📱 Acesse: http://localhost:5000")
     
-    # CORREÇÃO: Para desenvolvimento local, usar SocketIO
-    # Para produção (Vercel), usar Flask puro
-    if os.environ.get('VERCEL'):
+    # CORREÇÃO: Detecção robusta do ambiente Vercel
+    is_vercel = (
+        os.environ.get('VERCEL') == '1' or 
+        os.environ.get('VERCEL_ENV') is not None or
+        os.environ.get('VERCEL_URL') is not None or
+        'vercel' in os.environ.get('HOSTNAME', '').lower()
+    )
+    
+    if is_vercel:
+        print("🌐 AMBIENTE VERCEL DETECTADO - Usando Flask puro")
+        print(f"📍 VERCEL_URL: {os.environ.get('VERCEL_URL', 'N/A')}")
+        print(f"📍 VERCEL_ENV: {os.environ.get('VERCEL_ENV', 'N/A')}")
         # Ambiente Vercel - usar Flask puro (sem SocketIO)
-        app.run(debug=False, host='0.0.0.0', port=5000)
+        app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
     else:
+        print("🏠 AMBIENTE LOCAL DETECTADO - Usando SocketIO")
+        print("📱 Acesse: http://localhost:5000")
         # Ambiente local - usar SocketIO normalmente
         socketio.run(app, debug=True, host='0.0.0.0', port=5000)
