@@ -288,37 +288,6 @@ class TwitchVercel:
             # Configurar diretório de saída
             config['outtmpl'] = os.path.join(output_path, '%(title)s.%(ext)s')
             
-            # Log COMPLETO da configuração
-            print(f"🎮 Twitch Download - Ambiente: {env_type}")
-            print(f"📱 User-Agent: {config['http_headers']['User-Agent'][:50]}...")
-            print(f"⏱️ Timeout: {config['socket_timeout']}s")
-            print(f"🔄 Retries: {config['retries']}")
-            print(f"🌍 País: {config['geo_bypass_country']}")
-            print(f"🔍 DEBUG - Formato: {config['format']}")
-            print(f"🔍 DEBUG - Ignorar erros: {config.get('ignoreerrors', False)}")
-            
-            # Teste de conectividade básica
-            print(f"🔍 DEBUG - Testando conectividade com Twitch...")
-            import urllib.request
-            try:
-                urllib.request.urlopen('https://www.twitch.tv', timeout=10)
-                print(f"✅ DEBUG - Conectividade com Twitch OK")
-            except Exception as conn_e:
-                print(f"❌ DEBUG - Erro de conectividade: {conn_e}")
-            
-            # Primeiro, tentar extrair informações
-            try:
-                print(f"🔍 DEBUG - Extraindo informações da URL: {url}")
-                info = config['ydl'].extract_info(url, download=False)
-                print(f"✅ DEBUG - Informações extraídas com sucesso")
-                print(f"🎬 DEBUG - Título: {info.get('title', 'N/A')}")
-                print(f"⏱️ DEBUG - Duração: {info.get('duration', 'N/A')}s")
-                print(f"📊 DEBUG - Formato disponível: {info.get('format_id', 'N/A')}")
-                
-            except Exception as info_e:
-                print(f"❌ DEBUG - Erro ao extrair informações: {info_e}")
-                return False
-            
             # Criar hook de progresso personalizado para debug
             def debug_progress_hook(d):
                 if d['status'] == 'downloading':
@@ -327,11 +296,11 @@ class TwitchVercel:
                     
                     if total > 0:
                         percent = (downloaded / total) * 100
-                        print(f"📥 PROGRESSO: {percent:.1f}% ({downloaded}/{total} bytes)")
+                        print(f"� PROGRESSO: {percent:.1f}% ({downloaded}/{total} bytes)")
                         
                         # Log crítico quando chega perto de 50%
                         if 45 <= percent <= 55:
-                            print(f"🚨 CRÍTICO: Chegando em 50% - {percent:.1f}%")
+                            print(f"� CRÍTICO: Chegando em 50% - {percent:.1f}%")
                             print(f"🔍 Speed: {d.get('speed', 'N/A')} bytes/s")
                             print(f"🔍 ETA: {d.get('eta', 'N/A')}s")
                     
@@ -341,40 +310,68 @@ class TwitchVercel:
                     print(f"❌ ERRO NO DOWNLOAD: {d.get('error', 'Unknown')}")
             
             # Adicionar hook de progresso à configuração
-            config['progress_hooks'] = [debug_progress_hook]
+            if progress_hook:
+                config['progress_hooks'] = [progress_hook, debug_progress_hook]
+            else:
+                config['progress_hooks'] = [debug_progress_hook]
             
-            print(f"🚀 DEBUG - Iniciando download real...")
-            print(f"🔍 DEBUG - Timeout configurado: {config['socket_timeout']}s")
-            print(f"🔍 DEBUG - Retries configurados: {config['retries']}")
-            
-            # Executar download com timeout monitorado
-            import time
-            start_time = time.time()
-            
-            try:
-                config['ydl'].download([url])
-                elapsed = time.time() - start_time
-                print(f"✅ DEBUG - Download concluído em {elapsed:.2f}s")
+            with yt_dlp.YoutubeDL(config) as ydl:
+                print(f"✅ DEBUG - yt-dlp instanciado com sucesso")
+                print(f"🔍 DEBUG - Iniciando extração de informações...")
                 
-                # Verificar arquivos baixados
-                files = os.listdir(output_path) if os.path.exists(output_path) else []
-                print(f"✅ DEBUG - Arquivos criados: {len(files)}")
-                for file in files:
-                    file_path = os.path.join(output_path, file)
-                    size = os.path.getsize(file_path) if os.path.exists(file_path) else 0
-                    print(f"📁 DEBUG - {file}: {size} bytes")
+                # Primeiro, tentar extrair informações
+                try:
+                    print(f"🔍 DEBUG - Extraindo informações da URL: {url}")
+                    info = ydl.extract_info(url, download=False)
+                    print(f"✅ DEBUG - Informações extraídas com sucesso")
+                    print(f"🎬 DEBUG - Título: {info.get('title', 'N/A')}")
+                    print(f"⏱️ DEBUG - Duração: {info.get('duration', 'N/A')}s")
+                    print(f"📊 DEBUG - Formato disponível: {info.get('format_id', 'N/A')}")
+                    
+                except Exception as info_e:
+                    print(f"❌ DEBUG - Erro ao extrair informações: {info_e}")
+                    return False
                 
-                return len(files) > 0
+                print(f"🚀 DEBUG - Iniciando download real...")
+                print(f"🔍 DEBUG - Timeout configurado: {config['socket_timeout']}s")
+                print(f"🔍 DEBUG - Retries configurados: {config['retries']}")
                 
-            except Exception as download_e:
-                elapsed = time.time() - start_time
-                print(f"❌ DEBUG - Erro no download após {elapsed:.2f}s: {download_e}")
-                print(f"🔍 DEBUG - Tipo do erro: {type(download_e).__name__}")
+                # Executar download com timeout monitorado
+                import time
+                start_time = time.time()
                 
-                # Log específico para timeouts
-                if 'timeout' in str(download_e).lower():
-                    print(f"⏰ DEBUG - TIMEOUT DETECTADO!")
-                    print(f"⏰ DEBUG - Timeout configurado: {config['socket_timeout']}s")
-                    print(f"⏰ DEBUG - Tempo decorrido: {elapsed:.2f}s")
+                try:
+                    ydl.download([url])
+                    elapsed = time.time() - start_time
+                    print(f"✅ DEBUG - Download concluído em {elapsed:.2f}s")
+                    
+                    # Verificar arquivos baixados
+                    files = os.listdir(output_path) if os.path.exists(output_path) else []
+                    print(f"✅ DEBUG - Arquivos criados: {len(files)}")
+                    for file in files:
+                        file_path = os.path.join(output_path, file)
+                        size = os.path.getsize(file_path) if os.path.exists(file_path) else 0
+                        print(f"📁 DEBUG - {file}: {size} bytes")
+                    
+                    print(f"✅ Download da Twitch concluído no ambiente {env_type}")
+                    return len(files) > 0
+                    
+                except Exception as download_e:
+                    elapsed = time.time() - start_time
+                    print(f"❌ DEBUG - Erro no download após {elapsed:.2f}s: {download_e}")
+                    print(f"🔍 DEBUG - Tipo do erro: {type(download_e).__name__}")
+                    
+                    # Log específico para timeouts
+                    if 'timeout' in str(download_e).lower():
+                        print(f"⏰ DEBUG - TIMEOUT DETECTADO!")
+                        print(f"⏰ DEBUG - Timeout configurado: {config['socket_timeout']}s")
+                        print(f"⏰ DEBUG - Tempo decorrido: {elapsed:.2f}s")
+                    
+                    return False
                 
-                return False
+        except Exception as e:
+            print(f"❌ TwitchVercel.download_video() ERRO: {str(e)}")
+            import traceback
+            print(f"🔍 DEBUG - Traceback completo:")
+            traceback.print_exc()
+            return False
