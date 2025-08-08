@@ -613,4 +613,11 @@ if __name__ == '__main__':
     print("🚀 Iniciando Universal Video Downloader Web App...")
     print("📱 Acesse: http://localhost:5000")
     
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
+    # CORREÇÃO: Para desenvolvimento local, usar SocketIO
+    # Para produção (Vercel), usar Flask puro
+    if os.environ.get('VERCEL'):
+        # Ambiente Vercel - usar Flask puro (sem SocketIO)
+        app.run(debug=False, host='0.0.0.0', port=5000)
+    else:
+        # Ambiente local - usar SocketIO normalmente
+        socketio.run(app, debug=True, host='0.0.0.0', port=5000)
