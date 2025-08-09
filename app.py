@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, send_file, session
 from flask_socketio import SocketIO, emit
+from flask_cors import CORS  # Adicionar CORS para Railway
 import os
 import threading
 import tempfile
@@ -20,6 +21,14 @@ from youtube_vercel import YouTubeVercel, TwitchVercel  # Importar as soluções
 # TODO: Adicionar TwitchVercel quando a classe for criada no youtube_vercel.py
 
 app = Flask(__name__)
+
+# CORS: Permitir requests do frontend Vercel
+CORS(app, origins=[
+    "https://*.vercel.app",
+    "https://*.vercel.com", 
+    "http://localhost:*",
+    "https://localhost:*"
+])
 
 # SECRET KEY SEGURO - Usar variável de ambiente ou gerar aleatório
 app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(24).hex()
@@ -759,6 +768,16 @@ def download_twitch_segment():
     except Exception as e:
         return jsonify({'success': False, 'message': f'Erro ao iniciar download: {str(e)}'})
 
+@app.route('/health')
+def health_check():
+    """Health check endpoint para Railway"""
+    return jsonify({
+        'status': 'healthy',
+        'service': 'Universal Video Downloader API',
+        'timestamp': datetime.now().isoformat(),
+        'version': '1.0.0'
+    })
+
 # WebSocket events
 @socketio.on('connect')
 def handle_connect():
@@ -775,7 +794,13 @@ if __name__ == '__main__':
     
     print("🚀 Iniciando Universal Video Downloader Web App...")
     
-    # CORREÇÃO: Detecção robusta do ambiente Vercel
+    # DETECÇÃO DE AMBIENTE: Railway, Vercel ou Local
+    is_railway = (
+        os.environ.get('RAILWAY_ENVIRONMENT') is not None or
+        os.environ.get('RAILWAY_PROJECT_ID') is not None or
+        'railway' in os.environ.get('HOSTNAME', '').lower()
+    )
+    
     is_vercel = (
         os.environ.get('VERCEL') == '1' or 
         os.environ.get('VERCEL_ENV') is not None or
@@ -783,7 +808,13 @@ if __name__ == '__main__':
         'vercel' in os.environ.get('HOSTNAME', '').lower()
     )
     
-    if is_vercel:
+    if is_railway:
+        print("🚂 AMBIENTE RAILWAY DETECTADO - Backend API puro")
+        print(f"📍 PORT: {os.environ.get('PORT', '5000')}")
+        print(f"📍 RAILWAY_PROJECT: {os.environ.get('RAILWAY_PROJECT_ID', 'N/A')}")
+        # Ambiente Railway - Flask puro otimizado para produção
+        app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    elif is_vercel:
         print("🌐 AMBIENTE VERCEL DETECTADO - Usando Flask puro")
         print(f"📍 VERCEL_URL: {os.environ.get('VERCEL_URL', 'N/A')}")
         print(f"📍 VERCEL_ENV: {os.environ.get('VERCEL_ENV', 'N/A')}")
