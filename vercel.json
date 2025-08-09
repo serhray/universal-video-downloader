@@ -1,44 +1,7 @@
 {
-  "functions": {
-    "api/app.py": {
-      "runtime": "@vercel/python"
-    }
-  },
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/app.py"
-    },
-    {
-      "source": "/download",
-      "destination": "/api/app.py"
-    },
-    {
-      "source": "/health",
-      "destination": "/api/app.py"
-    },
-    {
-      "source": "/status/(.*)",
-      "destination": "/api/app.py"
-    },
-    {
-      "source": "/file/(.*)",
-      "destination": "/api/app.py"
-    },
-    {
-      "source": "/privacy-policy",
-      "destination": "/api/app.py"
-    },
-    {
-      "source": "/terms",
-      "destination": "/api/app.py"
-    },
-    {
-      "source": "/about",
-      "destination": "/api/app.py"
-    },
-    {
-      "source": "/",
+      "source": "/(.*)",
       "destination": "/api/app.py"
     }
   ]
