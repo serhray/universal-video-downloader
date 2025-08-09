@@ -1,18 +1,11 @@
 // Universal Video Downloader Web App - Frontend JavaScript
 class VideoDownloaderApp {
     constructor() {
-        // Detectar se está no ambiente Vercel
-        this.isVercel = window.location.hostname.includes('vercel.app') || 
-                       window.location.hostname.includes('vercel.com');
+        // FORÇAR MODO HTTP - SEM SOCKETIO (backend limpo)
+        this.isVercel = true; // Forçar modo HTTP sempre
+        this.socket = null; // Nunca usar SocketIO
         
-        // Inicializar WebSocket apenas se não estiver no Vercel
-        if (!this.isVercel) {
-            this.socket = io();
-            this.setupWebSocket();
-        } else {
-            this.socket = null;
-            console.log(' Ambiente Vercel detectado - WebSocket desabilitado');
-        }
+        console.log(' Modo HTTP forçado - SocketIO desabilitado');
         
         this.currentDownloadId = null;
         this.selectedVod = null;
@@ -25,11 +18,7 @@ class VideoDownloaderApp {
         this.applyPlatformTheme('YouTube');
         
         this.log(' Aplicação web carregada');
-        if (this.isVercel) {
-            this.log(' Modo Vercel: usando HTTP direto');
-        } else {
-            this.log(' Modo local: usando WebSocket');
-        }
+        this.log(' Modo HTTP: usando endpoints REST');
         this.log(' Sistema de temas ativado');
         this.log(' Selecione uma plataforma e cole a URL para começar');
     }
@@ -105,38 +94,6 @@ class VideoDownloaderApp {
         
         this.twitchUsername.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.searchVods();
-        });
-    }
-    
-    setupWebSocket() {
-        this.socket.on('connect', () => {
-            this.log(' Conectado ao servidor');
-        });
-        
-        this.socket.on('disconnect', () => {
-            this.log(' Desconectado do servidor');
-        });
-        
-        this.socket.on('download_progress', (data) => {
-            if (data.download_id === this.currentDownloadId) {
-                this.updateProgress(data.progress, data.status);
-            }
-        });
-        
-        this.socket.on('download_complete', (data) => {
-            if (data.download_id === this.currentDownloadId) {
-                this.log(' ' + data.message);
-                this.updateProgress(100, 'completed');
-                this.downloadFileBtn.style.display = 'block';
-            }
-        });
-        
-        this.socket.on('download_error', (data) => {
-            if (data.download_id === this.currentDownloadId) {
-                this.log(' ' + data.message);
-                this.updateProgress(0, 'error');
-                this.showAlert('Erro no download: ' + data.message, 'danger');
-            }
         });
     }
     
@@ -323,15 +280,20 @@ class VideoDownloaderApp {
                     this.log(` Formato: ${format}`);
                 }
                 
+                // AGUARDAR o download terminar usando polling
+                this.log(' Aguardando download terminar...');
+                this.updateProgress(25, 'processing');
+                await this.waitForDownloadComplete(data.download_id);
+                
                 // Atualizar progresso para todos os ambientes (local e Vercel)
-                this.log('✅ Download concluído com sucesso!');
+                this.log(' Download concluído com sucesso!');
                 this.updateProgress(100, 'completed');
                 this.downloadFileBtn.style.display = 'block';
                 
                 // Mostrar informações dos arquivos
                 if (data.files && data.files.length > 0) {
                     data.files.forEach(file => {
-                        this.log(`📁 Arquivo: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+                        this.log(` Arquivo: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
                     });
                 }
             } else {
@@ -626,8 +588,13 @@ class VideoDownloaderApp {
                     this.log(` Nome personalizado: ${customName}`);
                 }
                 
+                // AGUARDAR o download terminar usando polling
+                this.log(' Aguardando download terminar...');
+                this.updateProgress(25, 'processing');
+                await this.waitForDownloadComplete(data.download_id);
+                
                 // Atualizar progresso para todos os ambientes (local e Vercel)
-                this.log('✅ Download concluído com sucesso!');
+                this.log(' Download concluído com sucesso!');
                 this.updateProgress(100, 'completed');
                 this.downloadFileBtn.style.display = 'block';
             } else {
@@ -658,6 +625,37 @@ class VideoDownloaderApp {
             // Modo local (WebSocket)
             window.open(`/api/download_file/${this.currentDownloadId}`, '_blank');
             this.log(' Iniciando download do arquivo');
+        }
+    }
+    
+    async waitForDownloadComplete(downloadId) {
+        const interval = 2000; // 2 segundos
+        const timeout = 300000; // 5 minutos
+        
+        const startTime = Date.now();
+        
+        while (true) {
+            const response = await fetch(`/status/${downloadId}`);
+            const data = await response.json();
+            
+            if (data.status === 'completed') {
+                break;
+            } else if (data.status === 'error') {
+                this.log(` Erro no download: ${data.error}`);
+                this.showAlert(`Erro no download: ${data.error}`, 'danger');
+                this.progressCard.style.display = 'none';
+                return;
+            }
+            
+            const elapsed = Date.now() - startTime;
+            if (elapsed > timeout) {
+                this.log(' Tempo limite excedido. Cancelando download...');
+                this.showAlert('Tempo limite excedido. Cancelando download...', 'danger');
+                this.progressCard.style.display = 'none';
+                return;
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, interval));
         }
     }
     

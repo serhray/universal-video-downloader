@@ -1,0 +1,19 @@
+# Arquivos específicos do Render (não mais necessários)
+app_render.py
+render_app.py
+requirements_render.txt
+railway.toml
+Procfile
+index_vercel.html
+
+# Arquivos temporários
+*.pyc
+__pycache__/
+.env
+downloads/
+temp/
+
+# Arquivos de teste específicos (opcional)
+test_*.py
+debug_*.py
+quick_test.py
