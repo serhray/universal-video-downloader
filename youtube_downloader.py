@@ -94,18 +94,18 @@ class YouTubeDownloader:
                     'writethumbnail': False,
                 }
             else:
-                # Para vídeo - SELETORES OTIMIZADOS (máxima qualidade + áudio compatível)
+                # Para vídeo - SELETORES SIMPLIFICADOS E EFICAZES
                 if quality == 'best':
-                    # Priorizar máxima qualidade com áudio compatível (AAC/M4A)
-                    format_selector = 'bestvideo+bestaudio[ext=m4a]/bestvideo+bestaudio[acodec=aac]/bestvideo+bestaudio/best[height>=720]/best'
+                    # Seletor simplificado para máxima qualidade
+                    format_selector = 'best[height>=720]/bestvideo+bestaudio/best'
                 elif quality == 'worst':
-                    format_selector = 'worst[height<=480]/worst'
+                    format_selector = 'worst'
                 elif quality.endswith('p'):
                     height = quality[:-1]
-                    # Buscar qualidade específica com áudio compatível
-                    format_selector = f'bestvideo[height<={height}]+bestaudio[ext=m4a]/bestvideo[height<={height}]+bestaudio[acodec=aac]/bestvideo[height<={height}]+bestaudio/best[height<={height}]/best'
+                    # Seletor específico para altura desejada
+                    format_selector = f'best[height<={height}]/bestvideo[height<={height}]+bestaudio/best'
                 else:
-                    format_selector = 'bestvideo+bestaudio[ext=m4a]/bestvideo+bestaudio[acodec=aac]/bestvideo+bestaudio/best'
+                    format_selector = 'best[height>=720]/bestvideo+bestaudio/best'
                 
                 ydl_opts = {
                     'outtmpl': output_template,

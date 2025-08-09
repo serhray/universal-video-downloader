@@ -323,18 +323,16 @@ class VideoDownloaderApp {
                     this.log(` Formato: ${format}`);
                 }
                 
-                // Se estiver no Vercel, mostrar resultado correto
-                if (this.isVercel) {
-                    this.log(' Download concluído com sucesso!');
-                    this.updateProgress(100, 'completed');
-                    this.downloadFileBtn.style.display = 'block';
-                    
-                    // Mostrar informações dos arquivos
-                    if (data.files && data.files.length > 0) {
-                        data.files.forEach(file => {
-                            this.log(` Arquivo: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
-                        });
-                    }
+                // Atualizar progresso para todos os ambientes (local e Vercel)
+                this.log('✅ Download concluído com sucesso!');
+                this.updateProgress(100, 'completed');
+                this.downloadFileBtn.style.display = 'block';
+                
+                // Mostrar informações dos arquivos
+                if (data.files && data.files.length > 0) {
+                    data.files.forEach(file => {
+                        this.log(`📁 Arquivo: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+                    });
                 }
             } else {
                 // Melhorar tratamento de erro para evitar "undefined"
@@ -628,12 +626,10 @@ class VideoDownloaderApp {
                     this.log(` Nome personalizado: ${customName}`);
                 }
                 
-                // Se estiver no Vercel, mostrar resultado correto
-                if (this.isVercel) {
-                    this.log(' Download concluído com sucesso!');
-                    this.updateProgress(100, 'completed');
-                    this.downloadFileBtn.style.display = 'block';
-                }
+                // Atualizar progresso para todos os ambientes (local e Vercel)
+                this.log('✅ Download concluído com sucesso!');
+                this.updateProgress(100, 'completed');
+                this.downloadFileBtn.style.display = 'block';
             } else {
                 // Melhorar tratamento de erro para evitar "undefined"
                 const errorMessage = data.message || data.error || 'Erro desconhecido no download';
