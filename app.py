@@ -311,9 +311,41 @@ def download_video():
                         success = False
                 
                 if success:
-                    active_downloads[download_id]['status'] = 'completed'
-                    socketio.emit('download_complete', {
+                    # Listar arquivos baixados
+                    files = []
+                    file_cache = {}  # Cache para armazenar arquivos em memória
+                    
+                    for file in os.listdir(temp_dir):
+                        file_path = os.path.join(temp_dir, file)
+                        if os.path.isfile(file_path):
+                            # Ler arquivo para memória para evitar remoção pelo Vercel
+                            with open(file_path, 'rb') as f:
+                                file_data = f.read()
+                            
+                            # Armazenar no cache global
+                            cache_key = f"{download_id}_{file}"
+                            active_downloads[download_id] = {
+                                'status': 'completed',
+                                'temp_dir': temp_dir,
+                                'files': {cache_key: {
+                                    'data': file_data,
+                                    'filename': file,
+                                    'size': len(file_data)
+                                }}
+                            }
+                            
+                            files.append({
+                                'name': file,
+                                'size': len(file_data),
+                                'download_url': f'/api/download_file/{download_id}'
+                            })
+                    
+                    print(f"✅ DEBUG - Download concluído! Arquivos: {len(files)}")
+                    print(f"✅ DEBUG - Cache criado para ID: {download_id}")
+                    return jsonify({
+                        'success': True,
                         'download_id': download_id,
+                        'files': files,
                         'message': 'Download concluído com sucesso!'
                     })
                 else:
@@ -431,16 +463,35 @@ def download_endpoint():
         if success:
             # Listar arquivos baixados
             files = []
+            file_cache = {}  # Cache para armazenar arquivos em memória
+            
             for file in os.listdir(temp_dir):
                 file_path = os.path.join(temp_dir, file)
                 if os.path.isfile(file_path):
+                    # Ler arquivo para memória para evitar remoção pelo Vercel
+                    with open(file_path, 'rb') as f:
+                        file_data = f.read()
+                    
+                    # Armazenar no cache global
+                    cache_key = f"{download_id}_{file}"
+                    active_downloads[download_id] = {
+                        'status': 'completed',
+                        'temp_dir': temp_dir,
+                        'files': {cache_key: {
+                            'data': file_data,
+                            'filename': file,
+                            'size': len(file_data)
+                        }}
+                    }
+                    
                     files.append({
                         'name': file,
-                        'size': os.path.getsize(file_path),
+                        'size': len(file_data),
                         'download_url': f'/api/download_file/{download_id}'
                     })
             
             print(f"✅ DEBUG - Download concluído! Arquivos: {len(files)}")
+            print(f"✅ DEBUG - Cache criado para ID: {download_id}")
             return jsonify({
                 'success': True,
                 'download_id': download_id,
