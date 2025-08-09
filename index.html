@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Video Downloader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress {
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .status {
+            margin-top: 1rem;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .download-link {
+            display: none;
+            margin-top: 1rem;
+        }
+        
+        .download-link a {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Universal Video Downloader</h1>
+        
+        <form id="downloadForm">
+            <div class="form-group">
+                <label for="videoUrl">URL do Vídeo:</label>
+                <input type="url" id="videoUrl" placeholder="Cole a URL do vídeo aqui..." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="quality">Qualidade:</label>
+                <select id="quality">
+                    <option value="720p">720p (HD)</option>
+                    <option value="1080p">1080p (Full HD)</option>
+                    <option value="480p">480p</option>
+                    <option value="best">Melhor Disponível</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn" id="downloadBtn">
+                📥 Baixar Vídeo
+            </button>
+        </form>
+        
+        <div class="progress" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p id="progressText">Preparando download...</p>
+        </div>
+        
+        <div class="status" id="statusMessage"></div>
+        
+        <div class="download-link" id="downloadLinkContainer">
+            <a href="#" id="downloadLink" target="_blank">📥 Baixar Arquivo</a>
+        </div>
+    </div>
+
+    <script>
+        // URL do backend Render
+        const API_BASE_URL = 'https://universal-video-downloader-z7x8.onrender.com';
+        
+        const form = document.getElementById('downloadForm');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const statusMessage = document.getElementById('statusMessage');
+        const downloadLinkContainer = document.getElementById('downloadLinkContainer');
+        const downloadLink = document.getElementById('downloadLink');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const videoUrl = document.getElementById('videoUrl').value;
+            const quality = document.getElementById('quality').value;
+            
+            if (!videoUrl) {
+                showStatus('Por favor, insira uma URL válida.', 'error');
+                return;
+            }
+            
+            // Reset UI
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = '⏳ Processando...';
+            progressContainer.style.display = 'block';
+            statusMessage.style.display = 'none';
+            downloadLinkContainer.style.display = 'none';
+            
+            try {
+                // Fazer request para o backend Render
+                const response = await fetch(`${API_BASE_URL}/download`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        url: videoUrl,
+                        quality: quality
+                    })
+                });
+                
+                if (response.ok) {
+                    // Se o response for ok, significa que o arquivo está pronto para download
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    
+                    // Atualizar progresso para 100%
+                    updateProgress(100, 'Download concluído!');
+                    
+                    // Mostrar link de download
+                    downloadLink.href = downloadUrl;
+                    downloadLink.download = `video_${Date.now()}.mp4`;
+                    downloadLinkContainer.style.display = 'block';
+                    
+                    showStatus('✅ Download concluído com sucesso!', 'success');
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Erro no download');
+                }
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                showStatus(`❌ Erro: ${error.message}`, 'error');
+            } finally {
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = '📥 Baixar Vídeo';
+                progressContainer.style.display = 'none';
+            }
+        });
+        
+        function updateProgress(percent, text) {
+            progressFill.style.width = percent + '%';
+            progressText.textContent = text;
+        }
+        
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status ${type}`;
+            statusMessage.style.display = 'block';
+        }
+        
+        // Testar conexão com backend ao carregar
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                if (response.ok) {
+                    console.log('✅ Backend conectado:', await response.json());
+                } else {
+                    console.warn('⚠️ Backend não respondeu corretamente');
+                }
+            } catch (error) {
+                console.error('❌ Erro ao conectar com backend:', error);
+            }
+        });
+    </script>
+</body>
+</html>
