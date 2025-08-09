@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/app.py": {
+      "runtime": "python3.9"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -13,7 +18,27 @@
       "destination": "/api/app.py"
     },
     {
-      "source": "/(.*)",
+      "source": "/status/(.*)",
+      "destination": "/api/app.py"
+    },
+    {
+      "source": "/file/(.*)",
+      "destination": "/api/app.py"
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "/api/app.py"
+    },
+    {
+      "source": "/terms",
+      "destination": "/api/app.py"
+    },
+    {
+      "source": "/about",
+      "destination": "/api/app.py"
+    },
+    {
+      "source": "/",
       "destination": "/api/app.py"
     }
   ]

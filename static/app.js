@@ -8,9 +8,9 @@ class VideoDownloaderApp {
         console.log(' Modo HTTP forçado - SocketIO desabilitado');
         
         this.currentDownloadId = null;
-        this.selectedVod = null;
-        this.vods = [];
-        this.downloadFiles = []; // Adicionar após this.vods = [];        
+        this.selectedTweet = null;
+        this.tweets = [];
+        this.downloadFiles = [];
         this.initializeElements();
         this.bindEvents();
         
@@ -31,7 +31,7 @@ class VideoDownloaderApp {
         
         // Interface elements
         this.standardInterface = document.getElementById('standardInterface');
-        this.twitchInterface = document.getElementById('twitchInterface');
+        this.xTwitterInterface = document.getElementById('xTwitterInterface');
         
         // Standard interface elements
         this.videoUrl = document.getElementById('videoUrl');
@@ -42,13 +42,13 @@ class VideoDownloaderApp {
         this.downloadBtn = document.getElementById('downloadBtn');
         this.infoBtn = document.getElementById('infoBtn');
         
-        // Twitch interface elements
-        this.twitchUsername = document.getElementById('twitchUsername');
-        this.vodCount = document.getElementById('vodCount');
-        this.searchVodsBtn = document.getElementById('searchVodsBtn');
-        this.vodsListCard = document.getElementById('vodsListCard');
-        this.vodsList = document.getElementById('vodsList');
-        this.vodConfigCard = document.getElementById('vodConfigCard');
+        // X/Twitter interface elements
+        this.xTwitterUsername = document.getElementById('xTwitterUsername');
+        this.tweetCount = document.getElementById('tweetCount');
+        this.searchTweetsBtn = document.getElementById('searchTweetsBtn');
+        this.tweetsListCard = document.getElementById('tweetsListCard');
+        this.tweetsList = document.getElementById('tweetsList');
+        this.tweetConfigCard = document.getElementById('tweetConfigCard');
         this.customName = document.getElementById('customName');
         this.startTime = document.getElementById('startTime');
         this.endTime = document.getElementById('endTime');
@@ -74,8 +74,8 @@ class VideoDownloaderApp {
         this.downloadBtn.addEventListener('click', () => this.downloadVideo());
         this.infoBtn.addEventListener('click', () => this.getVideoInfo());
         
-        // Twitch interface events
-        this.searchVodsBtn.addEventListener('click', () => this.searchVods());
+        // X/Twitter interface events
+        this.searchTweetsBtn.addEventListener('click', () => this.searchTweets());
         this.downloadSegmentBtn.addEventListener('click', () => this.downloadSegment());
         
         // Progress events
@@ -93,8 +93,8 @@ class VideoDownloaderApp {
             }
         });
         
-        this.twitchUsername.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.searchVods();
+        this.xTwitterUsername.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.searchTweets();
         });
     }
     
@@ -134,8 +134,8 @@ class VideoDownloaderApp {
         this.platformIndicator.className = `platform-indicator ${indicator.class}`;
         
         // Switch interfaces
-        if (platform === 'TikTok') {
-            this.showTikTokInterface();
+        if (platform === 'X/Twitter') {
+            this.showXTwitterInterface();
         } else {
             this.showStandardInterface();
         }
@@ -180,14 +180,14 @@ class VideoDownloaderApp {
     
     showStandardInterface() {
         this.standardInterface.style.display = 'block';
-        this.twitchInterface.style.display = 'none';
+        this.xTwitterInterface.style.display = 'none';
         this.log(' Interface padrão ativada');
     }
     
-    showTikTokInterface() {
+    showXTwitterInterface() {
         this.standardInterface.style.display = 'none';
-        this.twitchInterface.style.display = 'block';
-        this.log(' Interface TikTok ativada');
+        this.xTwitterInterface.style.display = 'block';
+        this.log(' Interface X/Twitter ativada');
     }
     
     updateOptionsVisibility(platform) {
@@ -425,91 +425,91 @@ class VideoDownloaderApp {
         this.videoInfoCard.style.display = 'block';
     }
     
-    async searchVods() {
-        const username = this.twitchUsername.value.trim();
-        const maxVods = parseInt(this.vodCount.value);
+    async searchTweets() {
+        const username = this.xTwitterUsername.value.trim();
+        const maxTweets = parseInt(this.tweetCount.value);
         
         if (!username) {
-            this.showAlert('Por favor, digite o nome do streamer', 'warning');
+            this.showAlert('Por favor, digite o nome do usuário', 'warning');
             return;
         }
         
-        this.setButtonLoading(this.searchVodsBtn, true);
+        this.setButtonLoading(this.searchTweetsBtn, true);
         
         try {
-            const response = await fetch('/api/twitch/search_vods', {
+            const response = await fetch('/api/xTwitter/search_tweets', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, max_vods: maxVods })
+                body: JSON.stringify({ username, max_tweets: maxTweets })
             });
             
             const data = await response.json();
             
             if (data.success) {
-                this.vods = data.vods;
-                this.displayVods(data.vods);
-                this.log(` Encontrados ${data.count} VODs de ${username}`);
+                this.tweets = data.tweets;
+                this.displayTweets(data.tweets);
+                this.log(` Encontrados ${data.count} tweets de ${username}`);
             } else {
                 this.log(` ${data.message}`);
                 this.showAlert(data.message, 'danger');
-                this.vodsListCard.style.display = 'none';
+                this.tweetsListCard.style.display = 'none';
             }
         } catch (error) {
             this.log(` Erro na busca: ${error.message}`);
-            this.showAlert('Erro na busca de VODs', 'danger');
+            this.showAlert('Erro na busca de tweets', 'danger');
         } finally {
-            this.setButtonLoading(this.searchVodsBtn, false);
+            this.setButtonLoading(this.searchTweetsBtn, false);
         }
     }
     
-    displayVods(vods) {
+    displayTweets(tweets) {
         let content = '';
         
-        vods.forEach((vod, index) => {
+        tweets.forEach((tweet, index) => {
             content += `
-                <div class="vod-item" data-index="${index}" onclick="app.selectVod(${index})">
+                <div class="tweet-item" data-index="${index}" onclick="app.selectTweet(${index})">
                     <div class="row align-items-center">
                         <div class="col-1">
-                            <strong>#${vod.index}</strong>
+                            <strong>#${tweet.index}</strong>
                         </div>
                         <div class="col-3">
-                            ${vod.thumbnail ? `
-                                <img src="${vod.thumbnail}" 
-                                     alt="Thumbnail do VOD" 
-                                     class="vod-thumbnail img-fluid rounded shadow"
+                            ${tweet.thumbnail ? `
+                                <img src="${tweet.thumbnail}" 
+                                     alt="Thumbnail do tweet" 
+                                     class="tweet-thumbnail img-fluid rounded shadow"
                                      style="max-width: 100%; max-height: 80px; object-fit: cover;"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                 <div class="thumbnail-placeholder" style="display: none; padding: 10px; background-color: rgba(156, 39, 176, 0.1); border-radius: 8px; text-align: center;">
-                                    <i class="bi bi-play-circle" style="font-size: 1.5rem; color: var(--twitch-primary);"></i>
+                                    <i class="bi bi-play-circle" style="font-size: 1.5rem; color: var(--xTwitter-primary);"></i>
                                 </div>
                             ` : `
                                 <div class="thumbnail-placeholder" style="padding: 10px; background-color: rgba(156, 39, 176, 0.1); border-radius: 8px; text-align: center;">
-                                    <i class="bi bi-play-circle" style="font-size: 1.5rem; color: var(--twitch-primary);"></i>
+                                    <i class="bi bi-play-circle" style="font-size: 1.5rem; color: var(--xTwitter-primary);"></i>
                                 </div>
                             `}
                         </div>
                         <div class="col-5">
-                            <h6 class="mb-1">${vod.title}</h6>
-                            <small class="text-muted"> ${vod.upload_date}</small>
+                            <h6 class="mb-1">${tweet.text}</h6>
+                            <small class="text-muted"> ${tweet.upload_date}</small>
                         </div>
                         <div class="col-2">
-                            <small> ${vod.duration}</small>
+                            <small> ${tweet.duration}</small>
                         </div>
                         <div class="col-1">
-                            <small> ${vod.view_count.toLocaleString()}</small>
+                            <small> ${tweet.view_count.toLocaleString()}</small>
                         </div>
                     </div>
                 </div>
             `;
         });
         
-        this.vodsList.innerHTML = content;
-        this.vodsListCard.style.display = 'block';
+        this.tweetsList.innerHTML = content;
+        this.tweetsListCard.style.display = 'block';
     }
     
-    selectVod(index) {
+    selectTweet(index) {
         // Remove previous selection
-        document.querySelectorAll('.vod-item').forEach(item => {
+        document.querySelectorAll('.tweet-item').forEach(item => {
             item.classList.remove('selected');
         });
         
@@ -517,25 +517,25 @@ class VideoDownloaderApp {
         const selectedItem = document.querySelector(`[data-index="${index}"]`);
         selectedItem.classList.add('selected');
         
-        // Store selected VOD
-        this.selectedVod = this.vods[index];
+        // Store selected tweet
+        this.selectedTweet = this.tweets[index];
         
         // Suggest filename based on title
-        const cleanTitle = this.selectedVod.title
+        const cleanTitle = this.selectedTweet.text
             .replace(/[^a-zA-Z0-9\s\-_]/g, '')
             .substring(0, 30)
             .trim();
         this.customName.value = cleanTitle;
         
         // Show configuration card
-        this.vodConfigCard.style.display = 'block';
+        this.tweetConfigCard.style.display = 'block';
         
-        this.log(` VOD selecionado: ${this.selectedVod.title}`);
+        this.log(` Tweet selecionado: ${this.selectedTweet.text}`);
     }
     
     async downloadSegment() {
-        if (!this.selectedVod) {
-            this.showAlert('Por favor, selecione um VOD primeiro', 'warning');
+        if (!this.selectedTweet) {
+            this.showAlert('Por favor, selecione um tweet primeiro', 'warning');
             return;
         }
         
@@ -560,11 +560,11 @@ class VideoDownloaderApp {
         this.updateProgress(0, 'starting');
         
         try {
-            const response = await fetch('/api/twitch/download_segment', {
+            const response = await fetch('/api/xTwitter/download_segment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    vod_url: this.selectedVod.url,
+                    tweet_url: this.selectedTweet.url,
                     start_time: startTime,
                     end_time: endTime,
                     custom_name: customName
@@ -576,7 +576,7 @@ class VideoDownloaderApp {
             if (data.success) {
                 this.currentDownloadId = data.download_id;
                 this.log(` ${data.message}`);
-                this.log(` VOD: ${this.selectedVod.title}`);
+                this.log(` Tweet: ${this.selectedTweet.text}`);
                 this.log(` Segmento: ${startTime} → ${endTime}`);
                 if (customName) {
                     this.log(` Nome personalizado: ${customName}`);
