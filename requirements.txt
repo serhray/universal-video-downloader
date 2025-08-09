@@ -1,16 +1,3 @@
-# Universal Video Downloader Web App - Requirements (Railway Compatible)
-# Core web framework
 Flask==3.0.0
 Flask-CORS==4.0.0
-
-# Video downloading - VERSÃO ESTÁVEL PARA RAILWAY
 yt-dlp>=2024.11.0
-
-# Additional dependencies
-Werkzeug==3.0.1
-
-# Security and rate limiting
-Flask-Limiter==3.5.0
-
-# For Railway production deployment
-gunicorn==21.2.0
