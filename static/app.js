@@ -337,13 +337,17 @@ class VideoDownloaderApp {
                     }
                 }
             } else {
-                this.log(` ${data.message}`);
-                this.showAlert(data.message, 'danger');
+                // Melhorar tratamento de erro para evitar "undefined"
+                const errorMessage = data.message || data.error || 'Erro desconhecido no download';
+                this.log(` ${errorMessage}`);
+                this.showAlert(errorMessage, 'danger');
                 this.progressCard.style.display = 'none';
             }
         } catch (error) {
-            this.log(` Erro no download: ${error.message}`);
-            this.showAlert('Erro no download', 'danger');
+            // Melhorar tratamento de erro de rede/parsing
+            const errorMessage = error.message || 'Erro de conexão ou resposta inválida';
+            this.log(` Erro no download: ${errorMessage}`);
+            this.showAlert(`Erro no download: ${errorMessage}`, 'danger');
             this.progressCard.style.display = 'none';
         } finally {
             this.setButtonLoading(this.downloadBtn, false);
@@ -631,13 +635,17 @@ class VideoDownloaderApp {
                     this.downloadFileBtn.style.display = 'block';
                 }
             } else {
-                this.log(` ${data.message}`);
-                this.showAlert(data.message, 'danger');
+                // Melhorar tratamento de erro para evitar "undefined"
+                const errorMessage = data.message || data.error || 'Erro desconhecido no download';
+                this.log(` ${errorMessage}`);
+                this.showAlert(errorMessage, 'danger');
                 this.progressCard.style.display = 'none';
             }
         } catch (error) {
-            this.log(` Erro no download: ${error.message}`);
-            this.showAlert('Erro no download do segmento', 'danger');
+            // Melhorar tratamento de erro de rede/parsing
+            const errorMessage = error.message || 'Erro de conexão ou resposta inválida';
+            this.log(` Erro no download: ${errorMessage}`);
+            this.showAlert(`Erro no download: ${errorMessage}`, 'danger');
             this.progressCard.style.display = 'none';
         } finally {
             this.setButtonLoading(this.downloadSegmentBtn, false);

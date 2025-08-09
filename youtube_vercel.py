@@ -27,54 +27,92 @@ class YouTubeVercel:
         self.safe_countries = ['CA', 'AU', 'NL', 'DE']
     
     def get_vercel_config(self, progress_hook=None):
-        """Configuração otimizada para Vercel"""
+        """Configuração ULTRA-AGRESSIVA para YouTube no Vercel"""
         
         if self.is_vercel:
-            # Configuração ULTRA-CONSERVADORA para Vercel
+            # CONFIGURAÇÃO EXTREMA ANTI-BOT para Vercel
             config = {
-                # Headers minimalistas
+                # Headers ULTRA-REALISTAS
                 'http_headers': {
-                    'User-Agent': random.choice(self.vercel_user_agents),
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                    'Accept-Language': 'en-US,en;q=0.9',
-                    'Accept-Encoding': 'gzip, deflate',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                    'Accept-Language': 'en-US,en;q=0.9,pt;q=0.8',
+                    'Accept-Encoding': 'gzip, deflate, br',
                     'DNT': '1',
                     'Connection': 'keep-alive',
+                    'Upgrade-Insecure-Requests': '1',
+                    'Sec-Fetch-Dest': 'document',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-Site': 'none',
+                    'Sec-Fetch-User': '?1',
+                    'Cache-Control': 'max-age=0',
                 },
                 
-                # Timeouts MUITO baixos para Vercel (30s limit)
-                'socket_timeout': 20,
-                'sleep_interval': 1,
-                'max_sleep_interval': 2,
-                'sleep_interval_requests': 0.5,
+                # Timeouts conservadores para Vercel
+                'socket_timeout': 25,
+                'sleep_interval': 2,
+                'max_sleep_interval': 4,
+                'sleep_interval_requests': 1,
                 
-                # Tentativas mínimas para não estourar timeout
-                'retries': 3,
-                'fragment_retries': 2,
-                'file_access_retries': 2,
+                # Tentativas mínimas
+                'retries': 2,
+                'fragment_retries': 1,
+                'file_access_retries': 1,
                 
-                # Configurações YouTube MINIMALISTAS
+                # CONFIGURAÇÕES YOUTUBE ULTRA-ESPECÍFICAS ANTI-BOT
                 'extractor_args': {
                     'youtube': {
-                        'skip': ['dash', 'hls'],
-                        'player_client': ['android'],  # Só Android (mais estável)
+                        # Forçar cliente Android (mais estável)
+                        'player_client': ['android', 'android_creator'],
                         'player_skip': ['configs', 'webpage'],
+                        
+                        # Pular formatos problemáticos
+                        'skip': ['dash', 'hls'],
+                        
+                        # Configurações anti-detecção
+                        'include_ads': False,
+                        'innertube_host': 'www.youtube.com',
+                        'innertube_key': None,
+                        
+                        # Bypass de geo-restrições
+                        'bypass_geo_restriction': True,
                     }
                 },
                 
-                # Geo-bypass conservador
+                # Geo-bypass AGRESSIVO
                 'geo_bypass': True,
-                'geo_bypass_country': random.choice(self.safe_countries),
+                'geo_bypass_country': 'US',
+                'geo_bypass_ip_block': None,
                 
-                # Configurações anti-detecção MÍNIMAS
+                # Configurações anti-detecção EXTREMAS
                 'no_warnings': True,
                 'ignoreerrors': False,
                 'no_color': True,
                 'cachedir': False,
                 'no_cache_dir': True,
+                'no_playlist': True,
+                'writeinfojson': False,
+                'writesubtitles': False,
+                'writeautomaticsub': False,
+                
+                # Configurações de formato ESPECÍFICAS
+                'format': 'best[height<=720]/best',  # Limitar qualidade para evitar problemas
+                'merge_output_format': 'mp4',
+                'prefer_ffmpeg': True,
                 
                 # Progress hook
                 'progress_hooks': [progress_hook] if progress_hook else [],
+                
+                # COOKIES SIMULADOS para parecer navegador real
+                'cookiefile': None,
+                'cookiesfrombrowser': None,
+                
+                # Headers adicionais anti-bot
+                'add_headers': {
+                    'X-Forwarded-For': '8.8.8.8',
+                    'X-Real-IP': '8.8.8.8',
+                    'CF-Connecting-IP': '8.8.8.8',
+                }
             }
         else:
             # Configuração normal para localhost
