@@ -94,18 +94,18 @@ class YouTubeDownloader:
                     'writethumbnail': False,
                 }
             else:
-                # Para vídeo - SELETORES SIMPLIFICADOS E EFICAZES
+                # Para vídeo - SELETOR ROBUSTO COM FALLBACKS PROGRESSIVOS
                 if quality == 'best':
-                    # Seletor simplificado para máxima qualidade
-                    format_selector = 'best[height>=720]/bestvideo+bestaudio/best'
+                    # Seletor robusto: tentar alta qualidade com fallbacks seguros
+                    format_selector = 'best[height>=1080]/best[height>=720]/best[height>=480]/best'
                 elif quality == 'worst':
                     format_selector = 'worst'
                 elif quality.endswith('p'):
                     height = quality[:-1]
-                    # Seletor específico para altura desejada
-                    format_selector = f'best[height<={height}]/bestvideo[height<={height}]+bestaudio/best'
+                    # Seletor específico: buscar exatamente a qualidade ou superior
+                    format_selector = f'best[height={height}]/best[height>={height}]/best[height>=720]/best'
                 else:
-                    format_selector = 'best[height>=720]/bestvideo+bestaudio/best'
+                    format_selector = 'best[height>=720]/best'
                 
                 ydl_opts = {
                     'outtmpl': output_template,
