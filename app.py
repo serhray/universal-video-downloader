@@ -229,7 +229,8 @@ def process_download(download_id, url, platform):
         # Configurações específicas por plataforma
         if platform == 'TikTok':
             ydl_opts.update({
-                'format': 'best',
+                'format': 'best[ext=mp4]/best',
+                'cookiesfrombrowser': ('chrome', None, None, None),  # Usar cookies do Chrome
                 'http_headers': {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -237,17 +238,21 @@ def process_download(download_id, url, platform):
                     'Accept-Encoding': 'gzip, deflate',
                     'DNT': '1',
                     'Connection': 'keep-alive',
-                    'Upgrade-Insecure-Requests': '1'
+                    'Upgrade-Insecure-Requests': '1',
+                    'Referer': 'https://www.tiktok.com/'
                 },
                 'extractor_args': {
                     'tiktok': {
-                        'webpage_url_basename': 'video'
+                        'webpage_url_basename': 'video',
+                        'api_hostname': 'api.tiktokv.com'
                     }
                 },
                 'geo_bypass': True,
-                'geo_bypass_country': 'US'
+                'geo_bypass_country': 'US',
+                'sleep_interval': 1,
+                'max_sleep_interval': 3
             })
-            print(f"🔧 TikTok: Configurações anti-bloqueio aplicadas para {download_id}")
+            print(f"🔧 TikTok: Configurações com cookies do Chrome aplicadas para {download_id}")
         elif platform == 'Instagram':
             ydl_opts.update({
                 'format': 'best',
