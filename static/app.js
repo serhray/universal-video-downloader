@@ -15,9 +15,10 @@ class VideoDownloaderApp {
         this.bindEvents();
         
         // Apply default theme
-        this.applyPlatformTheme('YouTube');
+        this.applyPlatformTheme('Instagram');
         
         this.log(' Aplicação web carregada');
+        this.log(' Plataformas: Instagram, Facebook, TikTok, X/Twitter');
         this.log(' Modo HTTP: usando endpoints REST');
         this.log(' Sistema de temas ativado');
         this.log(' Selecione uma plataforma e cole a URL para começar');
@@ -106,11 +107,6 @@ class VideoDownloaderApp {
         
         // Update platform indicator
         const indicators = {
-            'YouTube': {
-                text: ' YouTube: Opções de qualidade e formato disponíveis',
-                class: 'platform-youtube',
-                emoji: ''
-            },
             'Instagram': {
                 text: ' Instagram: Download no formato original',
                 class: 'platform-instagram',
@@ -126,9 +122,9 @@ class VideoDownloaderApp {
                 class: 'platform-tiktok',
                 emoji: ''
             },
-            'Twitch': {
-                text: ' Twitch: Interface VOD especializada',
-                class: 'platform-twitch',
+            'X/Twitter': {
+                text: ' X/Twitter: Download no formato original',
+                class: 'platform-twitter',
                 emoji: ''
             }
         };
@@ -138,8 +134,8 @@ class VideoDownloaderApp {
         this.platformIndicator.className = `platform-indicator ${indicator.class}`;
         
         // Switch interfaces
-        if (platform === 'Twitch') {
-            this.showTwitchInterface();
+        if (platform === 'TikTok') {
+            this.showTikTokInterface();
         } else {
             this.showStandardInterface();
         }
@@ -154,11 +150,10 @@ class VideoDownloaderApp {
     applyPlatformTheme(platform) {
         // Remove all existing theme classes
         document.body.classList.remove(
-            'theme-youtube',
             'theme-instagram', 
             'theme-facebook',
             'theme-tiktok',
-            'theme-twitch'
+            'theme-twitter'
         );
         
         // Apply new theme class
@@ -167,11 +162,10 @@ class VideoDownloaderApp {
         
         // Update page title with platform emoji
         const platformEmojis = {
-            'YouTube': '',
             'Instagram': '',
             'Facebook': '',
             'TikTok': '',
-            'Twitch': ''
+            'X/Twitter': ''
         };
         
         const emoji = platformEmojis[platform] || '';
@@ -190,14 +184,14 @@ class VideoDownloaderApp {
         this.log(' Interface padrão ativada');
     }
     
-    showTwitchInterface() {
+    showTikTokInterface() {
         this.standardInterface.style.display = 'none';
         this.twitchInterface.style.display = 'block';
-        this.log(' Interface Twitch ativada');
+        this.log(' Interface TikTok ativada');
     }
     
     updateOptionsVisibility(platform) {
-        if (platform === 'YouTube') {
+        if (platform === 'Instagram') {
             this.optionsCard.style.display = 'block';
         } else {
             this.optionsCard.style.display = 'none';
@@ -275,7 +269,7 @@ class VideoDownloaderApp {
                 
                 this.log(` ${data.message}`);
                 this.log(` Plataforma: ${platform}`);
-                if (platform === 'YouTube') {
+                if (platform === 'Instagram') {
                     this.log(` Qualidade: ${quality}`);
                     this.log(` Formato: ${format}`);
                 }
@@ -696,11 +690,10 @@ class VideoDownloaderApp {
         // Add platform-specific icon
         const currentPlatform = this.platformSelect.value;
         const platformIcons = {
-            'YouTube': '',
             'Instagram': '',
             'Facebook': '',
             'TikTok': '',
-            'Twitch': ''
+            'X/Twitter': ''
         };
         
         const icon = platformIcons[currentPlatform] || '';

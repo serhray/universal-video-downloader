@@ -15,10 +15,6 @@
     --accent-info: #17a2b8;
     
     /* Platform specific colors - REFORÇADAS */
-    --youtube-primary: #ff1744;
-    --youtube-secondary: #ff5252;
-    --youtube-bg: rgba(255, 23, 68, 0.15);
-    
     --instagram-primary: #e91e63;
     --instagram-secondary: #ff6b35;
     --instagram-bg: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
@@ -31,9 +27,11 @@
     --tiktok-secondary: #00e5ff;
     --tiktok-bg: linear-gradient(45deg, #ff1744 0%, #00e5ff 100%);
     
-    --twitch-primary: #9c27b0;
-    --twitch-secondary: #7b1fa2;
-    --twitch-bg: rgba(156, 39, 176, 0.15);
+    --twitter-primary: #1da1f2;
+    --twitter-secondary: #ffffff;
+    --twitter-bg: rgba(29, 161, 242, 0.15);
+    --twitter-text: #ffffff;
+    --twitter-text-secondary: #e1e8ed;
 }
 
 /* Base styles */
@@ -69,16 +67,6 @@ body {
 }
 
 /* Platform-specific header themes */
-body.theme-youtube .header {
-    border-bottom-color: var(--youtube-primary);
-    background: linear-gradient(135deg, rgba(255, 23, 68, 0.05) 0%, transparent 100%);
-}
-
-body.theme-youtube .header h1 {
-    color: var(--youtube-primary);
-    text-shadow: 0 0 20px rgba(255, 23, 68, 0.3);
-}
-
 body.theme-instagram .header {
     border-bottom: 2px solid var(--instagram-primary);
     background: linear-gradient(135deg, rgba(233, 30, 99, 0.05) 0%, rgba(255, 107, 53, 0.05) 100%);
@@ -113,14 +101,14 @@ body.theme-tiktok .header h1 {
     background-clip: text;
 }
 
-body.theme-twitch .header {
-    border-bottom-color: var(--twitch-primary);
-    background: linear-gradient(135deg, rgba(156, 39, 176, 0.05) 0%, transparent 100%);
+body.theme-twitter .header {
+    border-bottom-color: var(--twitter-primary);
+    background: linear-gradient(135deg, rgba(29, 161, 242, 0.05) 0%, transparent 100%);
 }
 
-body.theme-twitch .header h1 {
-    color: var(--twitch-primary);
-    text-shadow: 0 0 20px rgba(156, 39, 176, 0.3);
+body.theme-twitter .header h1 {
+    color: var(--twitter-primary);
+    text-shadow: 0 0 20px rgba(29, 161, 242, 0.3);
 }
 
 /* Card styles */
@@ -150,24 +138,14 @@ body.theme-twitch .header h1 {
 }
 
 /* Platform-specific card themes */
-body.theme-youtube .card {
-    border-color: rgba(255, 23, 68, 0.3);
-    box-shadow: 0 4px 20px rgba(255, 23, 68, 0.1);
-}
-
-body.theme-youtube .card-header {
-    background: linear-gradient(135deg, rgba(255, 23, 68, 0.1) 0%, var(--bg-tertiary) 100%);
-    border-bottom-color: rgba(255, 23, 68, 0.3);
-}
-
 body.theme-instagram .card {
-    border: 1px solid rgba(233, 30, 99, 0.3);
+    border-color: rgba(233, 30, 99, 0.3);
     box-shadow: 0 4px 20px rgba(233, 30, 99, 0.1);
 }
 
 body.theme-instagram .card-header {
-    background: linear-gradient(135deg, rgba(233, 30, 99, 0.1) 0%, rgba(255, 107, 53, 0.05) 50%, var(--bg-tertiary) 100%);
-    border-bottom: 1px solid rgba(233, 30, 99, 0.3);
+    background: linear-gradient(135deg, rgba(233, 30, 99, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%);
+    border-bottom-color: rgba(233, 30, 99, 0.3);
 }
 
 body.theme-facebook .card {
@@ -190,14 +168,14 @@ body.theme-tiktok .card-header {
     border-bottom: 1px solid rgba(255, 23, 68, 0.3);
 }
 
-body.theme-twitch .card {
-    border-color: rgba(156, 39, 176, 0.3);
-    box-shadow: 0 4px 20px rgba(156, 39, 176, 0.1);
+body.theme-twitter .card {
+    border-color: rgba(29, 161, 242, 0.3);
+    box-shadow: 0 4px 20px rgba(29, 161, 242, 0.1);
 }
 
-body.theme-twitch .card-header {
-    background: linear-gradient(135deg, rgba(156, 39, 176, 0.1) 0%, var(--bg-tertiary) 100%);
-    border-bottom-color: rgba(156, 39, 176, 0.3);
+body.theme-twitter .card-header {
+    background: linear-gradient(135deg, rgba(29, 161, 242, 0.1) 0%, var(--bg-tertiary) 100%);
+    border-bottom-color: rgba(29, 161, 242, 0.3);
 }
 
 /* Platform indicator styles */
@@ -208,13 +186,6 @@ body.theme-twitch .card-header {
     text-align: center;
     margin-bottom: 20px;
     border-left: 4px solid;
-}
-
-.platform-youtube {
-    background: linear-gradient(135deg, rgba(255, 23, 68, 0.15) 0%, rgba(255, 82, 82, 0.1) 100%);
-    border-left-color: var(--youtube-primary);
-    color: #ff6b6b;
-    box-shadow: 0 4px 15px rgba(255, 23, 68, 0.2);
 }
 
 .platform-instagram {
@@ -238,11 +209,11 @@ body.theme-twitch .card-header {
     box-shadow: 0 4px 15px rgba(255, 23, 68, 0.2);
 }
 
-.platform-twitch {
-    background: linear-gradient(135deg, rgba(156, 39, 176, 0.15) 0%, rgba(119, 31, 162, 0.1) 100%);
-    border-left-color: var(--twitch-primary);
-    color: #b197fc;
-    box-shadow: 0 4px 15px rgba(156, 39, 176, 0.2);
+.platform-twitter {
+    background: linear-gradient(135deg, rgba(29, 161, 242, 0.15) 0%, rgba(119, 181, 254, 0.1) 100%);
+    border-left-color: var(--twitter-primary);
+    color: #b1d9f2;
+    box-shadow: 0 4px 15px rgba(29, 161, 242, 0.2);
 }
 
 /* Button styles */
@@ -332,21 +303,6 @@ body.theme-twitch .card-header {
 }
 
 /* Platform-specific form focus */
-body.theme-youtube .form-control:focus,
-body.theme-youtube .form-select:focus,
-body.theme-youtube #platformSelect:focus,
-body.theme-youtube #qualitySelect:focus,
-body.theme-youtube #formatSelect:focus {
-    border-color: var(--youtube-primary);
-    box-shadow: 0 0 0 0.2rem rgba(255, 23, 68, 0.25);
-}
-
-body.theme-youtube #platformSelect,
-body.theme-youtube #qualitySelect,
-body.theme-youtube #formatSelect {
-    border-color: rgba(255, 23, 68, 0.3);
-}
-
 body.theme-instagram .form-control:focus,
 body.theme-instagram .form-select:focus,
 body.theme-instagram #platformSelect:focus,
@@ -392,19 +348,19 @@ body.theme-tiktok #formatSelect {
     border-color: rgba(255, 23, 68, 0.3);
 }
 
-body.theme-twitch .form-control:focus,
-body.theme-twitch .form-select:focus,
-body.theme-twitch #platformSelect:focus,
-body.theme-twitch #qualitySelect:focus,
-body.theme-twitch #formatSelect:focus {
-    border-color: var(--twitch-primary);
-    box-shadow: 0 0 0 0.2rem rgba(156, 39, 176, 0.25);
+body.theme-twitter .form-control:focus,
+body.theme-twitter .form-select:focus,
+body.theme-twitter #platformSelect:focus,
+body.theme-twitter #qualitySelect:focus,
+body.theme-twitter #formatSelect:focus {
+    border-color: var(--twitter-primary);
+    box-shadow: 0 0 0 0.2rem rgba(29, 161, 242, 0.25);
 }
 
-body.theme-twitch #platformSelect,
-body.theme-twitch #qualitySelect,
-body.theme-twitch #formatSelect {
-    border-color: rgba(156, 39, 176, 0.3);
+body.theme-twitter #platformSelect,
+body.theme-twitter #qualitySelect,
+body.theme-twitter #formatSelect {
+    border-color: rgba(29, 161, 242, 0.3);
 }
 
 #qualitySelect option, #formatSelect option {
@@ -584,10 +540,6 @@ body.theme-twitch #formatSelect {
 }
 
 /* Platform-specific thumbnail borders */
-body.theme-youtube .video-thumbnail {
-    border-color: var(--youtube-primary);
-}
-
 body.theme-instagram .video-thumbnail {
     border-color: var(--instagram-primary);
 }
@@ -600,20 +552,11 @@ body.theme-tiktok .video-thumbnail {
     border-color: var(--tiktok-primary);
 }
 
-body.theme-twitch .video-thumbnail {
-    border-color: var(--twitch-primary);
+body.theme-twitter .video-thumbnail {
+    border-color: var(--twitter-primary);
 }
 
 /* Platform-specific video info colors */
-body.theme-youtube #videoInfoContent h6 {
-    color: var(--youtube-primary);
-    border-bottom-color: rgba(255, 23, 68, 0.3);
-}
-
-body.theme-youtube #videoInfoContent p {
-    border-left-color: var(--youtube-primary);
-}
-
 body.theme-instagram #videoInfoContent h6 {
     color: var(--instagram-primary);
     border-bottom-color: rgba(233, 30, 99, 0.3);
@@ -641,28 +584,28 @@ body.theme-tiktok #videoInfoContent p {
     border-left-color: var(--tiktok-primary);
 }
 
-body.theme-twitch #videoInfoContent h6 {
-    color: var(--twitch-primary);
-    border-bottom-color: rgba(156, 39, 176, 0.3);
+body.theme-twitter #videoInfoContent h6 {
+    color: var(--twitter-primary);
+    border-bottom-color: rgba(29, 161, 242, 0.3);
 }
 
-body.theme-twitch #videoInfoContent p {
-    border-left-color: var(--twitch-primary);
+body.theme-twitter #videoInfoContent p {
+    border-left-color: var(--twitter-primary);
 }
 
 /* VOD thumbnail styles */
 .vod-thumbnail {
-    border: 2px solid var(--twitch-primary);
+    border: 2px solid var(--twitter-primary);
     border-radius: 8px !important;
-    box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+    box-shadow: 0 4px 15px rgba(29, 161, 242, 0.3);
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .vod-thumbnail:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
-    border-color: var(--twitch-secondary);
+    box-shadow: 0 6px 20px rgba(29, 161, 242, 0.4);
+    border-color: var(--twitter-secondary);
 }
 
 .thumbnail-placeholder {
@@ -670,23 +613,23 @@ body.theme-twitch #videoInfoContent p {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px dashed rgba(156, 39, 176, 0.3);
+    border: 2px dashed rgba(29, 161, 242, 0.3);
     transition: all 0.3s ease;
 }
 
 .vod-item:hover .thumbnail-placeholder {
-    border-color: var(--twitch-primary);
-    background-color: rgba(156, 39, 176, 0.2) !important;
+    border-color: var(--twitter-primary);
+    background-color: rgba(29, 161, 242, 0.2) !important;
 }
 
 .vod-item.selected .vod-thumbnail {
-    border-color: var(--twitch-secondary);
-    box-shadow: 0 0 20px rgba(156, 39, 176, 0.6);
+    border-color: var(--twitter-secondary);
+    box-shadow: 0 0 20px rgba(29, 161, 242, 0.6);
 }
 
 .vod-item.selected .thumbnail-placeholder {
-    border-color: var(--twitch-secondary);
-    background-color: rgba(156, 39, 176, 0.3) !important;
+    border-color: var(--twitter-secondary);
+    background-color: rgba(29, 161, 242, 0.3) !important;
 }
 
 /* Log container */
@@ -888,14 +831,6 @@ input[type="number"]:focus {
 }
 
 /* Enhanced text contrast for all platforms */
-body.theme-youtube .card-header h5,
-body.theme-youtube .platform-indicator,
-body.theme-youtube #videoInfoContent h6 {
-    color: #ffffff !important;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 23, 68, 0.5);
-    font-weight: 700;
-}
-
 body.theme-instagram .card-header h5,
 body.theme-instagram .platform-indicator,
 body.theme-instagram #videoInfoContent h6 {
@@ -920,23 +855,15 @@ body.theme-tiktok #videoInfoContent h6 {
     font-weight: 700;
 }
 
-body.theme-twitch .card-header h5,
-body.theme-twitch .platform-indicator,
-body.theme-twitch #videoInfoContent h6 {
+body.theme-twitter .card-header h5,
+body.theme-twitter .platform-indicator,
+body.theme-twitter #videoInfoContent h6 {
     color: #ffffff !important;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(156, 39, 176, 0.5);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(29, 161, 242, 0.5);
     font-weight: 700;
 }
 
 /* Enhanced button text contrast */
-body.theme-youtube .btn-primary {
-    background: linear-gradient(135deg, var(--youtube-primary) 0%, var(--youtube-secondary) 100%);
-    border-color: var(--youtube-primary);
-    color: #ffffff !important;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
-    font-weight: 600;
-}
-
 body.theme-instagram .btn-primary {
     background: linear-gradient(135deg, var(--instagram-primary) 0%, var(--instagram-secondary) 100%);
     border-color: var(--instagram-primary);
@@ -961,9 +888,9 @@ body.theme-tiktok .btn-primary {
     font-weight: 600;
 }
 
-body.theme-twitch .btn-primary {
-    background: linear-gradient(135deg, var(--twitch-primary) 0%, var(--twitch-secondary) 100%);
-    border-color: var(--twitch-primary);
+body.theme-twitter .btn-primary {
+    background: linear-gradient(135deg, var(--twitter-primary) 0%, var(--twitter-secondary) 100%);
+    border-color: var(--twitter-primary);
     color: #ffffff !important;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
     font-weight: 600;

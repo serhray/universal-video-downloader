@@ -28,7 +28,7 @@ def api_info():
     """API info endpoint"""
     return {
         'message': 'Universal Video Downloader',
-        'platforms': ['TikTok', 'Instagram', 'Facebook'],
+        'platforms': ['Instagram', 'Facebook', 'TikTok', 'X/Twitter'],
         'status': 'running',
         'environment': 'vercel' if is_vercel else 'local'
     }
@@ -38,7 +38,7 @@ def health():
     return jsonify({
         'status': 'healthy',
         'service': 'Universal Video Downloader',
-        'platforms': ['TikTok', 'Instagram', 'Facebook'],
+        'platforms': ['Instagram', 'Facebook', 'TikTok', 'X/Twitter'],
         'version': '1.0.0',
         'environment': 'vercel' if is_vercel else 'local'
     })
@@ -205,6 +205,8 @@ def detect_platform(url):
         return 'Instagram'
     elif 'facebook.com' in url or 'fb.watch' in url:
         return 'Facebook'
+    elif 'twitter.com' in url or 'x.com' in url:
+        return 'X/Twitter'
     return None
 
 def process_download(download_id, url, platform):
@@ -230,7 +232,7 @@ def process_download(download_id, url, platform):
         if platform == 'TikTok':
             ydl_opts.update({
                 'format': 'best[ext=mp4]/best',
-                'cookiesfrombrowser': ('chrome', None, None, None),  # Usar cookies do Chrome
+                'cookiesfrombrowser': ('opera', None, None, None),  # Usar cookies do Opera
                 'http_headers': {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -252,7 +254,7 @@ def process_download(download_id, url, platform):
                 'sleep_interval': 1,
                 'max_sleep_interval': 3
             })
-            print(f"🔧 TikTok: Configurações com cookies do Chrome aplicadas para {download_id}")
+            print(f"🔧 TikTok: Configurações com cookies do Opera aplicadas para {download_id}")
         elif platform == 'Instagram':
             ydl_opts.update({
                 'format': 'best',
@@ -271,6 +273,13 @@ def process_download(download_id, url, platform):
                 }
             })
             print(f"🔧 Facebook: Configurações específicas aplicadas para {download_id}")
+        elif platform == 'X/Twitter':
+            ydl_opts.update({
+                'format': 'best',
+                'http_headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+            })
         
         print(f"📋 yt-dlp opts para {platform}: {ydl_opts}")
         
@@ -330,7 +339,7 @@ def process_download(download_id, url, platform):
 
 if __name__ == '__main__':
     print("🚀 Iniciando Video Downloader...")
-    print("📱 Plataformas: TikTok, Instagram, Facebook")
+    print("📱 Plataformas: Instagram, Facebook, TikTok, X/Twitter")
     
     if is_vercel:
         print("🌐 VERCEL detectado")
