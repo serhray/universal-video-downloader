@@ -250,13 +250,29 @@ def download_video():
         
         def download_thread():
             try:
-                downloader_map = {
-                    'YouTube': youtube_vercel,  # Usar a solução Vercel para YouTube
-                    'Instagram': instagram_dl,
-                    'Facebook': facebook_dl,
-                    'TikTok': tiktok_dl,
-                    'Twitch': twitch_vercel  # Usar a solução Vercel para Twitch
-                }
+                # Mapeamento de downloaders baseado no ambiente
+                is_vercel = os.getenv('VERCEL') or os.getenv('VERCEL_ENV') or os.getenv('VERCEL_URL')
+                
+                if is_vercel:
+                    # Configuração para Vercel (ambiente cloud)
+                    downloader_map = {
+                        'YouTube': youtube_vercel,
+                        'Instagram': instagram_dl,
+                        'Facebook': facebook_dl,
+                        'TikTok': tiktok_dl,
+                        'Twitch': twitch_vercel
+                    }
+                    print(f"🔍 DEBUG - Ambiente VERCEL detectado - usando downloaders otimizados")
+                else:
+                    # Configuração para localhost (ambiente local)
+                    downloader_map = {
+                        'YouTube': youtube_dl,  # YouTubeDownloader original para local
+                        'Instagram': instagram_dl,
+                        'Facebook': facebook_dl,
+                        'TikTok': tiktok_dl,
+                        'Twitch': twitch_dl  # TwitchDownloader original para local
+                    }
+                    print(f"🔍 DEBUG - Ambiente LOCAL detectado - usando downloaders padrão")
                 
                 downloader = downloader_map.get(platform)
                 if not downloader:
@@ -276,9 +292,9 @@ def download_video():
                     if platform == 'Instagram':
                         success = downloader.download_post(url, temp_dir, progress_callback)
                     elif platform == 'Facebook':
-                        success = downloader.download_video(url, temp_dir, progress_callback)
+                        success = downloader.download_video(url, temp_dir, quality, format_type, progress_callback)
                     elif platform == 'TikTok':
-                        success = downloader.download_video(url, temp_dir, progress_callback)
+                        success = downloader.download_video(url, temp_dir, quality, format_type, progress_callback)
                     elif platform == 'Twitch':
                         # ESTRATÉGIA DUPLA: TwitchVercel + Fallback
                         print(f"🎮 Tentando download da Twitch com TwitchVercel...")
@@ -288,7 +304,7 @@ def download_video():
                         # Verificar se o método existe antes de chamar
                         if hasattr(downloader, 'download_video'):
                             print(f"✅ DEBUG - Método download_video encontrado, chamando...")
-                            success = downloader.download_video(url, temp_dir, progress_callback)
+                            success = downloader.download_video(url, temp_dir, quality, format_type, progress_callback)
                             print(f"🔍 DEBUG - Resultado do download: {success}")
                         else:
                             print(f"❌ DEBUG - Método download_video NÃO encontrado!")
@@ -302,7 +318,7 @@ def download_video():
                             print(f"🔍 DEBUG - Fallback método disponível: {hasattr(fallback_downloader, 'download_video')}")
                             
                             if hasattr(fallback_downloader, 'download_video'):
-                                success = fallback_downloader.download_video(url, temp_dir, progress_callback)
+                                success = fallback_downloader.download_video(url, temp_dir, quality, format_type, progress_callback)
                                 print(f"🔍 DEBUG - Resultado do fallback: {success}")
                             else:
                                 print(f"❌ DEBUG - Fallback também não tem método download_video!")
@@ -420,14 +436,29 @@ def download_endpoint():
         print(f"🔍 DEBUG - Temp dir exists: {os.path.exists(temp_dir)}")
         print(f"🔍 DEBUG - Temp dir writable: {os.access(temp_dir, os.W_OK)}")
         
-        # Mapeamento de downloaders
-        downloader_map = {
-            'YouTube': youtube_vercel,
-            'Instagram': instagram_dl,
-            'Facebook': facebook_dl,
-            'TikTok': tiktok_dl,
-            'Twitch': twitch_vercel
-        }
+        # Mapeamento de downloaders baseado no ambiente
+        is_vercel = os.getenv('VERCEL') or os.getenv('VERCEL_ENV') or os.getenv('VERCEL_URL')
+        
+        if is_vercel:
+            # Configuração para Vercel (ambiente cloud)
+            downloader_map = {
+                'YouTube': youtube_vercel,
+                'Instagram': instagram_dl,
+                'Facebook': facebook_dl,
+                'TikTok': tiktok_dl,
+                'Twitch': twitch_vercel
+            }
+            print(f"🔍 DEBUG - Ambiente VERCEL detectado - usando downloaders otimizados")
+        else:
+            # Configuração para localhost (ambiente local)
+            downloader_map = {
+                'YouTube': youtube_dl,  # YouTubeDownloader original para local
+                'Instagram': instagram_dl,
+                'Facebook': facebook_dl,
+                'TikTok': tiktok_dl,
+                'Twitch': twitch_dl  # TwitchDownloader original para local
+            }
+            print(f"🔍 DEBUG - Ambiente LOCAL detectado - usando downloaders padrão")
         
         downloader = downloader_map.get(platform)
         print(f"🔍 DEBUG - Downloader selecionado: {type(downloader).__name__ if downloader else 'None'}")
@@ -446,7 +477,7 @@ def download_endpoint():
             
             if hasattr(downloader, 'download_video'):
                 print(f"✅ DEBUG - Método download_video encontrado, chamando...")
-                success = downloader.download_video(url, temp_dir, None)  # Sem progress_hook
+                success = downloader.download_video(url, temp_dir, quality, format_type, None)  # Sem progress_hook
                 print(f"🔍 DEBUG - Resultado do download: {success}")
             else:
                 print(f"❌ DEBUG - Método download_video NÃO encontrado!")
@@ -454,7 +485,7 @@ def download_endpoint():
         else:
             # Outras plataformas
             if hasattr(downloader, 'download_video'):
-                success = downloader.download_video(url, temp_dir, None)
+                success = downloader.download_video(url, temp_dir, quality, format_type, None)
             elif hasattr(downloader, 'download_post'):
                 success = downloader.download_post(url, temp_dir, None)
         
