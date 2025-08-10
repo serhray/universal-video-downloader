@@ -29,6 +29,30 @@ def test():
         'status': 'working'
     })
 
+@app.route('/privacy-policy')
+def privacy_policy():
+    """Página de política de privacidade"""
+    try:
+        return render_template('privacy-policy.html')
+    except:
+        return "<h1>Política de Privacidade</h1><p>Em desenvolvimento</p>"
+
+@app.route('/terms')
+def terms():
+    """Página de termos de uso"""
+    try:
+        return render_template('terms-of-service.html')
+    except:
+        return "<h1>Termos de Uso</h1><p>Em desenvolvimento</p>"
+
+@app.route('/about')
+def about():
+    """Página sobre o projeto"""
+    try:
+        return render_template('about.html')
+    except:
+        return "<h1>Sobre</h1><p>Universal Video Downloader - Instagram, Facebook, TikTok, X/Twitter</p>"
+
 # Entry point para Vercel
 if __name__ == '__main__':
     app.run(debug=True)
