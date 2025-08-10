@@ -232,104 +232,58 @@ class VideoDownloaderApp {
         }
         
         this.setButtonLoading(this.infoBtn, true);
-        this.log(`ℹ️ Buscando informações do vídeo ${platform}...`);
+        this.log(`ℹ️ Buscando informações reais do vídeo ${platform}...`);
         
         try {
-            // Simular informações realistas baseadas na plataforma
-            const videoInfo = this.generateVideoInfo(url, platform);
-            this.displayVideoInfo(videoInfo);
-            this.log(`✅ Informações do vídeo obtidas com sucesso`);
+            // Chamar endpoint real do backend com yt-dlp
+            const response = await fetch('/api/get_video_info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: url,
+                    platform: platform
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Exibir informações reais do vídeo
+                this.displayRealVideoInfo(result);
+                this.log(`✅ Informações reais obtidas: ${result.title}`);
+            } else {
+                this.log(`❌ Erro ao obter informações: ${result.error}`);
+                this.showAlert(`Erro: ${result.error}`, 'danger');
+            }
         } catch (error) {
-            this.log(`❌ Erro ao obter informações: ${error.message}`);
-            this.showAlert(`Erro ao obter informações: ${error.message}`, 'danger');
+            this.log(`❌ Erro de conexão: ${error.message}`);
+            this.showAlert(`Erro de conexão: ${error.message}`, 'danger');
         } finally {
             this.setButtonLoading(this.infoBtn, false);
         }
     }
     
-    generateVideoInfo(url, platform) {
-        // Extrair ID do vídeo da URL para gerar informações realistas
-        const videoId = this.extractVideoId(url, platform);
-        
-        const platformData = {
-            'Instagram': {
-                icon: '📷',
-                title: 'Post do Instagram',
-                formats: ['MP4 (720p)', 'MP4 (480p)', 'MP4 (360p)'],
-                duration: '0:45',
-                views: '1.2K curtidas'
-            },
-            'Facebook': {
-                icon: '📘',
-                title: 'Vídeo do Facebook',
-                formats: ['MP4 (1080p)', 'MP4 (720p)', 'MP4 (480p)'],
-                duration: '2:30',
-                views: '850 visualizações'
-            },
-            'TikTok': {
-                icon: '🎵',
-                title: 'Vídeo do TikTok',
-                formats: ['MP4 (720p)', 'MP4 (480p)'],
-                duration: '0:15',
-                views: '45.7K visualizações'
-            },
-            'X/Twitter': {
-                icon: '🐦',
-                title: 'Vídeo do X/Twitter',
-                formats: ['MP4 (720p)', 'MP4 (480p)', 'MP4 (360p)'],
-                duration: '1:12',
-                views: '2.8K visualizações'
-            }
-        };
-        
-        const data = platformData[platform];
-        
-        return {
-            platform: platform,
-            icon: data.icon,
-            title: `${data.title} - ${videoId}`,
-            url: url,
-            duration: data.duration,
-            views: data.views,
-            formats: data.formats,
-            thumbnail: `https://via.placeholder.com/320x180/333/fff?text=${platform}+Video`,
-            extractedAt: new Date().toLocaleString('pt-BR')
-        };
-    }
-    
-    extractVideoId(url, platform) {
-        // Extrair identificador único da URL para cada plataforma
-        try {
-            if (platform === 'Instagram') {
-                const match = url.match(/\/p\/([^\/\?]+)/);
-                return match ? match[1].substring(0, 8) : 'post123';
-            } else if (platform === 'Facebook') {
-                const match = url.match(/\/videos\/(\d+)/);
-                return match ? match[1].substring(-8) : 'video456';
-            } else if (platform === 'TikTok') {
-                const match = url.match(/\/video\/(\d+)/);
-                return match ? match[1].substring(-8) : 'tiktok789';
-            } else if (platform === 'X/Twitter') {
-                const match = url.match(/\/status\/(\d+)/);
-                return match ? match[1].substring(-8) : 'tweet101';
-            }
-        } catch (e) {
-            return 'video001';
-        }
-        return 'video001';
-    }
-    
-    displayVideoInfo(info) {
-        // Mostrar card de informações do vídeo
+    displayRealVideoInfo(info) {
+        // Mostrar card de informações reais do vídeo
         this.videoInfoCard.style.display = 'block';
+        
+        // Formatar duração
+        const duration = info.duration ? this.formatDuration(info.duration) : 'N/A';
+        
+        // Formatar visualizações
+        const views = info.view_count ? this.formatViews(info.view_count) : 'N/A';
         
         this.videoInfoContent.innerHTML = `
             <div class="row">
                 <div class="col-md-4 mb-3">
-                    <img src="${info.thumbnail}" class="img-fluid rounded shadow-sm" alt="Thumbnail" style="border: 2px solid rgba(255,255,255,0.1);">
+                    <img src="${info.thumbnail || 'https://via.placeholder.com/320x180/333/fff?text=' + info.platform + '+Video'}" 
+                         class="img-fluid rounded shadow-sm" alt="Thumbnail" 
+                         style="border: 2px solid rgba(255,255,255,0.1);">
                 </div>
                 <div class="col-md-8">
-                    <h5 class="mb-4 text-white fw-bold">${info.icon} ${info.title}</h5>
+                    <h5 class="mb-4 text-white fw-bold">${this.getPlatformIcon(info.platform)} ${info.title}</h5>
                     
                     <div class="row mb-3">
                         <div class="col-sm-4"><strong class="text-light">Plataforma:</strong></div>
@@ -338,18 +292,38 @@ class VideoDownloaderApp {
                     
                     <div class="row mb-3">
                         <div class="col-sm-4"><strong class="text-light">Duração:</strong></div>
-                        <div class="col-sm-8"><span class="text-warning fw-bold fs-5">${info.duration}</span></div>
+                        <div class="col-sm-8"><span class="text-warning fw-bold fs-5">${duration}</span></div>
                     </div>
                     
                     <div class="row">
                         <div class="col-sm-4"><strong class="text-light">Estatísticas:</strong></div>
-                        <div class="col-sm-8"><span class="text-success fw-bold">${info.views}</span></div>
+                        <div class="col-sm-8"><span class="text-success fw-bold">${views}</span></div>
                     </div>
                 </div>
             </div>
         `;
         
-        this.log(`📋 Informações do vídeo exibidas: ${info.title}`);
+        this.log(`📋 Informações reais exibidas: ${info.title}`);
+    }
+    
+    getPlatformIcon(platform) {
+        const icons = {
+            'Instagram': '📷',
+            'Facebook': '📘',
+            'TikTok': '🎵',
+            'X/Twitter': '🐦'
+        };
+        return icons[platform] || '🎬';
+    }
+    
+    formatViews(count) {
+        if (count >= 1000000) {
+            return (count / 1000000).toFixed(1) + 'M visualizações';
+        } else if (count >= 1000) {
+            return (count / 1000).toFixed(1) + 'K visualizações';
+        } else {
+            return count + ' visualizações';
+        }
     }
     
     async downloadVideo() {
