@@ -100,7 +100,7 @@ class VideoDownloaderApp {
     
     onPlatformChange() {
         const platform = this.platformSelect.value;
-        this.log(` Plataforma selecionada: ${platform}`);
+        this.log(`🎯 Plataforma selecionada: ${platform}`);
         
         // Apply platform theme to body
         this.applyPlatformTheme(platform);
@@ -108,24 +108,24 @@ class VideoDownloaderApp {
         // Update platform indicator
         const indicators = {
             'Instagram': {
-                text: ' Instagram: Download no formato original',
+                text: '📷 Instagram: Download no formato original',
                 class: 'platform-instagram',
-                emoji: ''
+                emoji: '📷'
             },
             'Facebook': {
-                text: ' Facebook: Download no formato original',
+                text: '📘 Facebook: Download no formato original',
                 class: 'platform-facebook',
-                emoji: ''
+                emoji: '📘'
             },
             'TikTok': {
-                text: ' TikTok: Download no formato original',
+                text: '🎵 TikTok (requer login): Download no formato original',
                 class: 'platform-tiktok',
-                emoji: ''
+                emoji: '🎵'
             },
             'X/Twitter': {
-                text: ' X/Twitter: Download no formato original',
+                text: '🐦 X/Twitter: Download no formato original',
                 class: 'platform-twitter',
-                emoji: ''
+                emoji: '🐦'
             }
         };
         
@@ -133,18 +133,15 @@ class VideoDownloaderApp {
         this.platformIndicator.textContent = `${indicator.emoji} ${indicator.text}`;
         this.platformIndicator.className = `platform-indicator ${indicator.class}`;
         
-        // Switch interfaces
-        if (platform === 'X/Twitter') {
-            this.showXTwitterInterface();
-        } else {
-            this.showStandardInterface();
-        }
+        // CORREÇÃO: Todas as plataformas usam a interface padrão
+        // Remover lógica de interface especial para X/Twitter
+        this.showStandardInterface();
         
         // Update options visibility
         this.updateOptionsVisibility(platform);
         
         // Log platform theme change
-        this.log(` Tema ${platform} aplicado`);
+        this.log(`🎨 Tema ${platform} aplicado`);
     }
     
     applyPlatformTheme(platform) {
