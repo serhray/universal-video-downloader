@@ -19,7 +19,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     
     <!-- Custom CSS with dynamic cache busting -->
-    <link href="{{ url_for('static', filename='style.css') }}?v={{ cache_bust }}&t=20250809" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}?v={{ cache_bust }}&t=20250809&force=1" rel="stylesheet">
     
     <!-- Socket.IO -->
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
