@@ -38,7 +38,8 @@ def privacy_policy():
         return "<h1>Política de Privacidade</h1><p>Em desenvolvimento</p>"
 
 @app.route('/terms')
-def terms():
+@app.route('/terms-of-service')
+def terms_of_service():
     """Página de termos de uso"""
     try:
         return render_template('terms-of-service.html')
