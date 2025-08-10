@@ -325,32 +325,37 @@ class VideoDownloaderApp {
         
         this.videoInfoContent.innerHTML = `
             <div class="row">
-                <div class="col-md-4">
-                    <img src="${info.thumbnail}" class="img-fluid rounded" alt="Thumbnail">
+                <div class="col-md-4 mb-3">
+                    <img src="${info.thumbnail}" class="img-fluid rounded shadow-sm" alt="Thumbnail" style="border: 2px solid rgba(255,255,255,0.1);">
                 </div>
                 <div class="col-md-8">
-                    <h5 class="mb-3">${info.icon} ${info.title}</h5>
-                    <div class="row mb-2">
-                        <div class="col-sm-4"><strong>Plataforma:</strong></div>
-                        <div class="col-sm-8">${info.platform}</div>
+                    <h5 class="mb-4 text-white fw-bold">${info.icon} ${info.title}</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong class="text-light">Plataforma:</strong></div>
+                        <div class="col-sm-8"><span class="badge bg-primary fs-6 px-3 py-2">${info.platform}</span></div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-4"><strong>Duração:</strong></div>
-                        <div class="col-sm-8">${info.duration}</div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong class="text-light">Duração:</strong></div>
+                        <div class="col-sm-8"><span class="text-warning fw-bold fs-5">${info.duration}</span></div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-4"><strong>Estatísticas:</strong></div>
-                        <div class="col-sm-8">${info.views}</div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong class="text-light">Estatísticas:</strong></div>
+                        <div class="col-sm-8"><span class="text-success fw-bold">${info.views}</span></div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-4"><strong>Formatos:</strong></div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong class="text-light">Formatos:</strong></div>
                         <div class="col-sm-8">
-                            ${info.formats.map(format => `<span class="badge bg-secondary me-1">${format}</span>`).join('')}
+                            ${info.formats.map(format => `<span class="badge bg-light text-dark me-2 mb-1 px-3 py-2 fw-bold">${format}</span>`).join('')}
                         </div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-4"><strong>Extraído em:</strong></div>
-                        <div class="col-sm-8"><small class="text-muted">${info.extractedAt}</small></div>
+                    
+                    <div class="row">
+                        <div class="col-sm-4"><strong class="text-light">Extraído em:</strong></div>
+                        <div class="col-sm-8"><small class="text-info fw-bold">${info.extractedAt}</small></div>
                     </div>
                 </div>
             </div>
