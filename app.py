@@ -51,8 +51,19 @@ def get_ydl_opts(platform, quality='best'):
         base_opts.update({
             'format': 'best[height<=720]/best',
             'http_headers': {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-            }
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Referer': 'https://twitter.com/',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            'extractor_args': {
+                'twitter': {
+                    'legacy_api': True,
+                }
+            },
+            'geo_bypass': True,
+            'geo_bypass_country': 'US'
         })
     
     return base_opts
@@ -126,6 +137,13 @@ def get_video_info():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             
+            # CORREÇÃO: Verificar se info não é None
+            if info is None:
+                return jsonify({
+                    'success': False, 
+                    'error': f'{platform} bloqueou a extração de informações. Tente novamente ou use outra URL.'
+                })
+            
             video_info = {
                 'success': True,
                 'title': info.get('title', 'Vídeo sem título'),
@@ -172,22 +190,11 @@ def download_video():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
             
-            # CORREÇÃO: Verificar se info não é None
-            if info is None:
-                return jsonify({
-                    'success': False, 
-                    'error': f'{platform} bloqueou o download. Tente novamente ou use outra URL.'
-                })
-            
             # Encontrar arquivo baixado
             files = os.listdir(download_path)
             if files:
                 filename = files[0]
                 filepath = os.path.join(download_path, filename)
-                
-                # CORREÇÃO: Verificar se arquivo realmente existe
-                if not os.path.exists(filepath):
-                    return jsonify({'success': False, 'error': f'Arquivo não foi criado corretamente para {platform}'})
                 
                 # Salvar informações do download
                 download_cache[download_id] = {
@@ -206,10 +213,10 @@ def download_video():
                     'download_url': f'/file/{download_id}'
                 })
             else:
-                return jsonify({'success': False, 'error': f'Nenhum arquivo foi baixado para {platform}. Possível bloqueio ou URL inválida.'})
+                return jsonify({'success': False, 'error': 'Arquivo não encontrado após download'})
                 
     except Exception as e:
-        return jsonify({'success': False, 'error': f'Erro no download {platform}: {str(e)}'})
+        return jsonify({'success': False, 'error': f'Erro no download: {str(e)}'})
 
 @app.route('/file/<download_id>')
 def download_file(download_id):

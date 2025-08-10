@@ -247,6 +247,12 @@ class VideoDownloaderApp {
                 })
             });
             
+            // CORREÇÃO: Verificar se resposta é JSON válido
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error(`${platform} retornou erro do servidor (HTML em vez de JSON)`);
+            }
+            
             const result = await response.json();
             
             if (result.success) {
