@@ -341,16 +341,9 @@ class VideoDownloaderApp {
                         <div class="col-sm-8"><span class="text-warning fw-bold fs-5">${info.duration}</span></div>
                     </div>
                     
-                    <div class="row mb-3">
+                    <div class="row">
                         <div class="col-sm-4"><strong class="text-light">Estatísticas:</strong></div>
                         <div class="col-sm-8"><span class="text-success fw-bold">${info.views}</span></div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-sm-4"><strong class="text-light">Formatos:</strong></div>
-                        <div class="col-sm-8">
-                            ${info.formats.map(format => `<span class="badge bg-light text-dark me-2 mb-1 px-3 py-2 fw-bold">${format}</span>`).join('')}
-                        </div>
                     </div>
                 </div>
             </div>
