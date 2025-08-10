@@ -207,30 +207,36 @@ class VideoDownloaderApp {
             return;
         }
         
-        this.setButtonLoading(this.validateBtn, true);
+        // Validação simples por URL (sem endpoint backend)
+        const platformPatterns = {
+            'Instagram': /instagram\.com/i,
+            'Facebook': /(facebook\.com|fb\.watch)/i,
+            'TikTok': /tiktok\.com/i,
+            'X/Twitter': /(twitter\.com|x\.com)/i
+        };
         
-        try {
-            const response = await fetch('/api/validate_url', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url, platform })
-            });
-            
-            const data = await response.json();
-            
-            if (data.valid) {
-                this.log(` ${data.message}`);
-                this.showAlert(data.message, 'success');
-            } else {
-                this.log(` ${data.message}`);
-                this.showAlert(data.message, 'danger');
-            }
-        } catch (error) {
-            this.log(` Erro na validação: ${error.message}`);
-            this.showAlert('Erro na validação', 'danger');
-        } finally {
-            this.setButtonLoading(this.validateBtn, false);
+        const pattern = platformPatterns[platform];
+        if (pattern && pattern.test(url)) {
+            this.log(`✅ URL ${platform} válida`);
+            this.showAlert(`URL ${platform} válida`, 'success');
+        } else {
+            this.log(`❌ URL não é válida para ${platform}`);
+            this.showAlert(`URL não é válida para ${platform}`, 'danger');
         }
+    }
+
+    async getVideoInfo() {
+        const url = this.videoUrl.value.trim();
+        const platform = this.platformSelect.value;
+        
+        if (!url) {
+            this.showAlert('Por favor, digite uma URL', 'warning');
+            return;
+        }
+        
+        // Informações básicas sem endpoint backend
+        this.log(`ℹ️ Informações básicas para ${platform}`);
+        this.showAlert(`Plataforma: ${platform}. Use o botão Download para baixar o vídeo.`, 'info');
     }
     
     async downloadVideo() {
@@ -308,317 +314,38 @@ class VideoDownloaderApp {
         }
     }
     
-    async getVideoInfo() {
-        const url = this.videoUrl.value.trim();
-        const platform = this.platformSelect.value;
-        
-        if (!url) {
-            this.showAlert('Por favor, digite uma URL', 'warning');
-            return;
-        }
-        
-        this.setButtonLoading(this.infoBtn, true);
-        
-        try {
-            const response = await fetch('/api/get_video_info', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url, platform })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                this.displayVideoInfo(data.info);
-                this.log(' Informações do vídeo obtidas');
-            } else {
-                this.log(` ${data.message}`);
-                this.showAlert(data.message, 'danger');
-            }
-        } catch (error) {
-            this.log(` Erro ao obter informações: ${error.message}`);
-            this.showAlert('Erro ao obter informações', 'danger');
-        } finally {
-            this.setButtonLoading(this.infoBtn, false);
-        }
-    }
-    
-    displayVideoInfo(info) {
-        let content = ``;
-        
-        // Adicionar thumbnail se disponível
-        if (info.thumbnail) {
-            content += `
-                <div class="row mb-4">
-                    <div class="col-12 text-center">
-                        <img src="${info.thumbnail}" 
-                             alt="Thumbnail do vídeo" 
-                             class="video-thumbnail img-fluid rounded shadow"
-                             style="max-width: 100%; max-height: 300px; object-fit: cover;"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <div class="thumbnail-error" style="display: none; padding: 20px; background-color: rgba(255, 255, 255, 0.1); border-radius: 8px; margin: 10px 0;">
-                            <i class="bi bi-image" style="font-size: 2rem; color: var(--text-secondary);"></i>
-                            <p style="margin-top: 10px; color: var(--text-secondary);">
-                                Thumbnail não disponível para esta ${info.platform} post
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        content += `
-            <div class="row">
-                <div class="col-md-6">
-                    <h6><i class="bi bi-play-circle"></i> Título:</h6>
-                    <p>${info.title}</p>
-                    
-                    <h6><i class="bi bi-person-circle"></i> Autor:</h6>
-                    <p>${info.uploader}</p>
-                </div>
-                <div class="col-md-6">
-        `;
-        
-        if (info.duration > 0) {
-            const duration = this.formatDuration(info.duration);
-            content += `
-                <h6><i class="bi bi-clock"></i> Duração:</h6>
-                <p>${duration}</p>
-            `;
-        }
-        
-        if (info.view_count > 0) {
-            content += `
-                <h6><i class="bi bi-eye"></i> Visualizações:</h6>
-                <p>${info.view_count.toLocaleString()}</p>
-            `;
-        }
-        
-        // Platform specific info
-        if (info.post_type) {
-            content += `
-                <h6><i class="bi bi-tag"></i> Tipo:</h6>
-                <p>${info.post_type}</p>
-            `;
-        }
-        
-        if (info.carousel_count) {
-            content += `
-                <h6><i class="bi bi-images"></i> Carrossel:</h6>
-                <p>${info.carousel_count} itens</p>
-            `;
-        }
-        
-        if (info.like_count > 0) {
-            content += `
-                <h6><i class="bi bi-heart"></i> Curtidas:</h6>
-                <p>${info.like_count.toLocaleString()}</p>
-            `;
-        }
-        
-        content += `
-                </div>
-            </div>
-        `;
-        
-        this.videoInfoContent.innerHTML = content;
-        this.videoInfoCard.style.display = 'block';
-    }
-    
     async searchTweets() {
-        const username = this.xTwitterUsername.value.trim();
-        const maxTweets = parseInt(this.tweetCount.value);
-        
-        if (!username) {
-            this.showAlert('Por favor, digite o nome do usuário', 'warning');
-            return;
-        }
-        
-        this.setButtonLoading(this.searchTweetsBtn, true);
-        
-        try {
-            const response = await fetch('/api/xTwitter/search_tweets', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, max_tweets: maxTweets })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                this.tweets = data.tweets;
-                this.displayTweets(data.tweets);
-                this.log(` Encontrados ${data.count} tweets de ${username}`);
-            } else {
-                this.log(` ${data.message}`);
-                this.showAlert(data.message, 'danger');
-                this.tweetsListCard.style.display = 'none';
-            }
-        } catch (error) {
-            this.log(` Erro na busca: ${error.message}`);
-            this.showAlert('Erro na busca de tweets', 'danger');
-        } finally {
-            this.setButtonLoading(this.searchTweetsBtn, false);
-        }
+        // X/Twitter search não implementado no backend atual
+        this.showAlert('Funcionalidade X/Twitter em desenvolvimento. Use a interface padrão para URLs diretas.', 'info');
+        this.log('⚠️ X/Twitter search não implementado - use interface padrão');
     }
-    
+
     displayTweets(tweets) {
-        let content = '';
-        
-        tweets.forEach((tweet, index) => {
-            content += `
-                <div class="tweet-item" data-index="${index}" onclick="app.selectTweet(${index})">
-                    <div class="row align-items-center">
-                        <div class="col-1">
-                            <strong>#${tweet.index}</strong>
-                        </div>
-                        <div class="col-3">
-                            ${tweet.thumbnail ? `
-                                <img src="${tweet.thumbnail}" 
-                                     alt="Thumbnail do tweet" 
-                                     class="tweet-thumbnail img-fluid rounded shadow"
-                                     style="max-width: 100%; max-height: 80px; object-fit: cover;"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="thumbnail-placeholder" style="display: none; padding: 10px; background-color: rgba(156, 39, 176, 0.1); border-radius: 8px; text-align: center;">
-                                    <i class="bi bi-play-circle" style="font-size: 1.5rem; color: var(--xTwitter-primary);"></i>
-                                </div>
-                            ` : `
-                                <div class="thumbnail-placeholder" style="padding: 10px; background-color: rgba(156, 39, 176, 0.1); border-radius: 8px; text-align: center;">
-                                    <i class="bi bi-play-circle" style="font-size: 1.5rem; color: var(--xTwitter-primary);"></i>
-                                </div>
-                            `}
-                        </div>
-                        <div class="col-5">
-                            <h6 class="mb-1">${tweet.text}</h6>
-                            <small class="text-muted"> ${tweet.upload_date}</small>
-                        </div>
-                        <div class="col-2">
-                            <small> ${tweet.duration}</small>
-                        </div>
-                        <div class="col-1">
-                            <small> ${tweet.view_count.toLocaleString()}</small>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        
-        this.tweetsList.innerHTML = content;
-        this.tweetsListCard.style.display = 'block';
+        // Função mantida para compatibilidade, mas não usada
+        this.log('⚠️ displayTweets não implementado');
     }
-    
+
     selectTweet(index) {
-        // Remove previous selection
-        document.querySelectorAll('.tweet-item').forEach(item => {
-            item.classList.remove('selected');
-        });
-        
-        // Add selection to clicked item
-        const selectedItem = document.querySelector(`[data-index="${index}"]`);
-        selectedItem.classList.add('selected');
-        
-        // Store selected tweet
-        this.selectedTweet = this.tweets[index];
-        
-        // Suggest filename based on title
-        const cleanTitle = this.selectedTweet.text
-            .replace(/[^a-zA-Z0-9\s\-_]/g, '')
-            .substring(0, 30)
-            .trim();
-        this.customName.value = cleanTitle;
-        
-        // Show configuration card
-        this.tweetConfigCard.style.display = 'block';
-        
-        this.log(` Tweet selecionado: ${this.selectedTweet.text}`);
+        // Função mantida para compatibilidade, mas não usada
+        this.log('⚠️ selectTweet não implementado');
     }
-    
+
     async downloadSegment() {
-        if (!this.selectedTweet) {
-            this.showAlert('Por favor, selecione um tweet primeiro', 'warning');
-            return;
-        }
-        
-        const startTime = this.startTime.value.trim();
-        const endTime = this.endTime.value.trim();
-        const customName = this.customName.value.trim() || null;
-        
-        if (!startTime || !endTime) {
-            this.showAlert('Por favor, defina os tempos de início e fim', 'warning');
-            return;
-        }
-        
-        // Validate time format
-        const timeRegex = /^(\d{1,2}):([0-5]\d)(:([0-5]\d))?$/;
-        if (!timeRegex.test(startTime) || !timeRegex.test(endTime)) {
-            this.showAlert('Formato de tempo inválido. Use MM:SS ou HH:MM:SS', 'warning');
-            return;
-        }
-        
-        this.setButtonLoading(this.downloadSegmentBtn, true);
-        this.progressCard.style.display = 'block';
-        this.updateProgress(0, 'starting');
-        
-        try {
-            const response = await fetch('/api/xTwitter/download_segment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    tweet_url: this.selectedTweet.url,
-                    start_time: startTime,
-                    end_time: endTime,
-                    custom_name: customName
-                })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                this.currentDownloadId = data.download_id;
-                this.log(` ${data.message}`);
-                this.log(` Tweet: ${this.selectedTweet.text}`);
-                this.log(` Segmento: ${startTime} → ${endTime}`);
-                if (customName) {
-                    this.log(` Nome personalizado: ${customName}`);
-                }
-                
-                // AGUARDAR o download terminar usando polling
-                this.log(' Aguardando download terminar...');
-                this.updateProgress(25, 'processing');
-                await this.waitForDownloadComplete(data.download_id);
-                
-                // Atualizar progresso para todos os ambientes (local e Vercel)
-                this.log(' Download concluído com sucesso!');
-                this.updateProgress(100, 'completed');
-                this.downloadFileBtn.style.display = 'block';
-            } else {
-                // Melhorar tratamento de erro para evitar "undefined"
-                const errorMessage = data.message || data.error || 'Erro desconhecido no download';
-                this.log(` ${errorMessage}`);
-                this.showAlert(errorMessage, 'danger');
-                this.progressCard.style.display = 'none';
-            }
-        } catch (error) {
-            // Melhorar tratamento de erro de rede/parsing
-            const errorMessage = error.message || 'Erro de conexão ou resposta inválida';
-            this.log(` Erro no download: ${errorMessage}`);
-            this.showAlert(`Erro no download: ${errorMessage}`, 'danger');
-            this.progressCard.style.display = 'none';
-        } finally {
-            this.setButtonLoading(this.downloadSegmentBtn, false);
-        }
+        // X/Twitter segment download não implementado no backend atual
+        this.showAlert('Funcionalidade X/Twitter em desenvolvimento. Use a interface padrão para URLs diretas.', 'info');
+        this.log('⚠️ X/Twitter segment download não implementado - use interface padrão');
     }
-    
+
     downloadFile() {
         if (this.isVercel && this.downloadFiles && this.downloadFiles.length > 0) {
             // No Vercel, usar os arquivos da resposta HTTP
             const file = this.downloadFiles[0]; // Pegar o primeiro arquivo
             window.open(file.download_url, '_blank');
-            this.log(` Iniciando download: ${file.name}`);
+            this.log(`📥 Iniciando download: ${file.name}`);
         } else if (this.currentDownloadId) {
-            // Modo local (WebSocket)
-            window.open(`/api/download_file/${this.currentDownloadId}`, '_blank');
-            this.log(' Iniciando download do arquivo');
+            // Usar endpoint correto /file/ em vez de /api/download_file/
+            window.open(`/file/${this.currentDownloadId}`, '_blank');
+            this.log('📥 Iniciando download do arquivo');
         }
     }
     
