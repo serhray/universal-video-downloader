@@ -387,14 +387,14 @@ class VideoDownloaderApp {
             return;
         }
         
-        // NOVA LÓGICA: Se for Twitter ou Instagram, usar download direto ultra-simples
-        if (platform === 'X/Twitter' || platform === 'Instagram') {
+        // NOVA LÓGICA: Se for Twitter, Instagram ou TikTok, usar download direto ultra-simples
+        if (platform === 'X/Twitter' || platform === 'Instagram' || platform === 'TikTok') {
             console.log(`[DEBUG] Usando download direto para ${platform}`);
             await this.downloadDirect(platform);
             return;
         }
         
-        // Lógica original para outras plataformas (Facebook, TikTok)
+        // Lógica original para outras plataformas (Facebook)
         this.setButtonLoading(this.downloadBtn, true);
         this.progressCard.style.display = 'block';
         this.updateProgress(0, 'starting');

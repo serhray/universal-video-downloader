@@ -326,9 +326,9 @@ def download_direct():
         if not url:
             return jsonify({'success': False, 'error': 'URL não fornecida'})
         
-        # Suportar Twitter e Instagram
-        if platform not in ['X/Twitter', 'Instagram']:
-            return jsonify({'success': False, 'error': f'Endpoint não suporta {platform}. Use X/Twitter ou Instagram.'})
+        # Suportar Twitter, Instagram e TikTok
+        if platform not in ['X/Twitter', 'Instagram', 'TikTok']:
+            return jsonify({'success': False, 'error': f'Endpoint não suporta {platform}. Use X/Twitter, Instagram ou TikTok.'})
         
         # Criar diretório temporário único
         temp_dir = tempfile.mkdtemp()
@@ -373,6 +373,34 @@ def download_direct():
                 'geo_bypass': True,
                 'geo_bypass_country': 'BR',
             }
+        elif platform == 'TikTok':
+            ydl_opts = {
+                # FORÇAR H.264 em vez de HEVC para melhor compatibilidade
+                'format': 'best[vcodec^=avc][height<=720]/best[height<=720]/best',
+                'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
+                'quiet': True,
+                'no_warnings': True,
+                'http_headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                    'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Referer': 'https://www.tiktok.com/',
+                },
+                # Configurações específicas para TikTok
+                'sleep_interval': 1,
+                'retries': 2,
+                'fragment_retries': 2,
+                # Bypass geográfico
+                'geo_bypass': True,
+                'geo_bypass_country': 'BR',
+                # Forçar re-encoding se necessário para garantir H.264
+                'postprocessors': [{
+                    'key': 'FFmpegVideoConvertor',
+                    'preferedformat': 'mp4',
+                    'preferedcodec': 'libx264',  # Forçar H.264
+                }] if os.path.exists('/usr/bin/ffmpeg') or os.path.exists('/usr/local/bin/ffmpeg') else [],
+            }
         
         print(f"[DEBUG] Iniciando yt-dlp para {platform}...")
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -414,6 +442,8 @@ def download_direct():
                         download_name = f"twitter_video_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
                     elif platform == 'Instagram':
                         download_name = f"instagram_video_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+                    elif platform == 'TikTok':
+                        download_name = f"tiktok_video_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
                     
                     # Retornar arquivo diretamente
                     return send_file(
