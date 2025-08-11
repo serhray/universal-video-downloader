@@ -5,6 +5,7 @@ import tempfile
 import uuid
 from datetime import datetime
 import re
+import random
 
 app = Flask(__name__)
 
@@ -23,6 +24,8 @@ def get_ydl_opts(platform, quality='best'):
         'ignoreerrors': True,
         'no_warnings': False,
         'quiet': False,
+        'socket_timeout': 60,
+        'retries': 3,
     }
     
     # Configurações específicas por plataforma
@@ -30,40 +33,84 @@ def get_ydl_opts(platform, quality='best'):
         base_opts.update({
             'format': 'best[height<=720]/best',
             'http_headers': {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1',
+            },
+            'extractor_args': {
+                'instagram': {
+                    'api_version': 'v1',
+                }
             }
         })
     elif platform == 'Facebook':
         base_opts.update({
             'format': 'best[height<=1080]/best',
             'http_headers': {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept-Encoding': 'gzip, deflate',
+                'Connection': 'keep-alive',
             }
         })
     elif platform == 'TikTok':
+        user_agents = [
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Linux; Android 11; Pixel 4 XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+        ]
         base_opts.update({
             'format': 'best[height<=720]/best',
             'http_headers': {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-            }
+                'User-Agent': random.choice(user_agents),
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Referer': 'https://www.tiktok.com/',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'none',
+            },
+            'extractor_args': {
+                'tiktok': {
+                    'webpage_url_basename': 'video',
+                    'api_hostname': 'api.tiktokv.com',
+                }
+            },
+            'geo_bypass': True,
+            'geo_bypass_country': 'US',
+            'sleep_interval': 2,
+            'max_sleep_interval': 5,
         })
     elif platform == 'X/Twitter':
+        user_agents = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Linux; Android 11; Pixel 4 XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1',
+        ]
         base_opts.update({
             'format': 'best[height<=720]/best',
             'http_headers': {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'User-Agent': random.choice(user_agents),
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 'Accept-Language': 'en-US,en;q=0.9',
                 'Referer': 'https://twitter.com/',
                 'X-Requested-With': 'XMLHttpRequest',
+                'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
             },
             'extractor_args': {
                 'twitter': {
                     'legacy_api': True,
+                    'api_version': '1.1',
                 }
             },
             'geo_bypass': True,
-            'geo_bypass_country': 'US'
+            'geo_bypass_country': 'US',
+            'sleep_interval': 1,
+            'max_sleep_interval': 3,
         })
     
     return base_opts
@@ -165,36 +212,62 @@ def get_video_info():
 def download_video():
     """Download do vídeo usando yt-dlp"""
     try:
+        print(f"[DEBUG] Download iniciado - recebendo dados...")
         data = request.get_json()
         url = data.get('url', '').strip()
         platform = data.get('platform', '')
         quality = data.get('quality', 'best')
         
+        print(f"[DEBUG] URL: {url}")
+        print(f"[DEBUG] Platform: {platform}")
+        print(f"[DEBUG] Quality: {quality}")
+        
         if not url:
+            print(f"[DEBUG] Erro: URL não fornecida")
             return jsonify({'success': False, 'error': 'URL não fornecida'})
         
         # Gerar ID único para o download
         download_id = str(uuid.uuid4())
+        print(f"[DEBUG] Download ID gerado: {download_id}")
         
         # Configurar diretório de download
         download_path = os.path.join(DOWNLOAD_DIR, download_id)
         os.makedirs(download_path, exist_ok=True)
+        print(f"[DEBUG] Diretório criado: {download_path}")
         
         # Configurar yt-dlp
         ydl_opts = get_ydl_opts(platform, quality)
         ydl_opts.update({
             'outtmpl': os.path.join(download_path, '%(title)s.%(ext)s'),
         })
+        print(f"[DEBUG] Configurações yt-dlp: {ydl_opts}")
         
         # Realizar download
+        print(f"[DEBUG] Iniciando yt-dlp para {platform}...")
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
+            print(f"[DEBUG] yt-dlp concluído, info: {type(info)}")
+            
+            # CORREÇÃO: Verificar se info não é None
+            if info is None:
+                print(f"[DEBUG] Erro: info é None para {platform}")
+                return jsonify({
+                    'success': False, 
+                    'error': f'{platform} bloqueou o download. Tente novamente ou use outra URL.'
+                })
             
             # Encontrar arquivo baixado
             files = os.listdir(download_path)
+            print(f"[DEBUG] Arquivos no diretório: {files}")
             if files:
                 filename = files[0]
                 filepath = os.path.join(download_path, filename)
+                print(f"[DEBUG] Arquivo encontrado: {filepath}")
+                
+                # CORREÇÃO: Verificar se arquivo realmente existe
+                if not os.path.exists(filepath):
+                    print(f"[DEBUG] Erro: Arquivo não existe: {filepath}")
+                    return jsonify({'success': False, 'error': f'Arquivo não foi criado corretamente para {platform}'})
                 
                 # Salvar informações do download
                 download_cache[download_id] = {
@@ -205,6 +278,7 @@ def download_video():
                     'created_at': datetime.now().isoformat()
                 }
                 
+                print(f"[DEBUG] Download salvo no cache: {download_id}")
                 return jsonify({
                     'success': True,
                     'download_id': download_id,
@@ -213,10 +287,102 @@ def download_video():
                     'download_url': f'/file/{download_id}'
                 })
             else:
-                return jsonify({'success': False, 'error': 'Arquivo não encontrado após download'})
+                print(f"[DEBUG] Erro: Nenhum arquivo encontrado no diretório")
+                return jsonify({'success': False, 'error': f'Nenhum arquivo foi baixado para {platform}. Possível bloqueio ou URL inválida.'})
                 
     except Exception as e:
-        return jsonify({'success': False, 'error': f'Erro no download: {str(e)}'})
+        print(f"[DEBUG] Exception no download {platform}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': f'Erro no download {platform}: {str(e)}'})
+
+@app.route('/download_direct', methods=['POST'])
+def download_direct():
+    """Download direto sem cache - ultra-simples para Twitter e Instagram"""
+    try:
+        print(f"[DEBUG] Download direto iniciado...")
+        data = request.get_json()
+        url = data.get('url', '').strip()
+        platform = data.get('platform', '')
+        
+        print(f"[DEBUG] URL: {url}")
+        print(f"[DEBUG] Platform: {platform}")
+        
+        if not url:
+            return jsonify({'success': False, 'error': 'URL não fornecida'})
+        
+        # Suportar Twitter e Instagram
+        if platform not in ['X/Twitter', 'Instagram']:
+            return jsonify({'success': False, 'error': f'Endpoint não suporta {platform}. Use X/Twitter ou Instagram.'})
+        
+        # Criar diretório temporário único
+        temp_dir = tempfile.mkdtemp()
+        print(f"[DEBUG] Diretório temporário: {temp_dir}")
+        
+        # Configurações específicas por plataforma
+        if platform == 'X/Twitter':
+            ydl_opts = {
+                'format': 'best[height<=720]/best',
+                'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
+                'quiet': True,
+                'no_warnings': True,
+                'http_headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                }
+            }
+        elif platform == 'Instagram':
+            ydl_opts = {
+                'format': 'best[height<=720]/best',
+                'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
+                'quiet': True,
+                'no_warnings': True,
+                'http_headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                },
+                # Configurações específicas para Instagram
+                'cookiefile': None,  # Instagram pode precisar de cookies no futuro
+            }
+        
+        print(f"[DEBUG] Iniciando yt-dlp para {platform}...")
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+            
+            if info is None:
+                print(f"[DEBUG] Erro: yt-dlp retornou None")
+                return jsonify({'success': False, 'error': f'{platform} bloqueou o download ou URL inválida'})
+            
+            # Encontrar arquivo baixado
+            files = os.listdir(temp_dir)
+            print(f"[DEBUG] Arquivos baixados: {files}")
+            
+            if files:
+                filename = files[0]
+                filepath = os.path.join(temp_dir, filename)
+                
+                if os.path.exists(filepath):
+                    print(f"[DEBUG] Enviando arquivo: {filepath}")
+                    # Determinar extensão baseada na plataforma
+                    if platform == 'X/Twitter':
+                        download_name = f"twitter_video_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+                    elif platform == 'Instagram':
+                        download_name = f"instagram_video_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+                    
+                    # Retornar arquivo diretamente
+                    return send_file(
+                        filepath, 
+                        as_attachment=True, 
+                        download_name=download_name
+                    )
+                else:
+                    return jsonify({'success': False, 'error': 'Arquivo não encontrado'})
+            else:
+                return jsonify({'success': False, 'error': 'Nenhum arquivo foi baixado'})
+                
+    except Exception as e:
+        print(f"[DEBUG] Erro no download direto: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': f'Erro: {str(e)}'})
 
 @app.route('/file/<download_id>')
 def download_file(download_id):
@@ -236,6 +402,30 @@ def download_file(download_id):
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/status/<download_id>')
+def download_status(download_id):
+    """Verificar status do download"""
+    try:
+        if download_id not in download_cache:
+            return jsonify({'status': 'not_found', 'error': 'Download não encontrado'}), 404
+        
+        file_info = download_cache[download_id]
+        filepath = file_info['filepath']
+        
+        if os.path.exists(filepath):
+            return jsonify({
+                'status': 'completed',
+                'filename': file_info['filename'],
+                'title': file_info['title'],
+                'platform': file_info['platform'],
+                'download_url': f'/file/{download_id}'
+            })
+        else:
+            return jsonify({'status': 'error', 'error': 'Arquivo não encontrado'})
+            
+    except Exception as e:
+        return jsonify({'status': 'error', 'error': str(e)}), 500
 
 @app.route('/privacy-policy')
 def privacy_policy():

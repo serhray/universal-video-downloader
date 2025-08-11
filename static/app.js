@@ -48,8 +48,13 @@ class VideoDownloaderApp {
         this.searchTweetsBtn = document.getElementById('searchTweetsBtn');
         this.tweetsListCard = document.getElementById('tweetsListCard');
         this.tweetsList = document.getElementById('tweetsList');
-        this.tweetConfigCard = document.getElementById('tweetConfigCard');
-        this.customName = document.getElementById('customName');
+        
+        // Twitch interface elements
+        this.twitchUsername = document.getElementById('twitchUsername');
+        this.vodCount = document.getElementById('vodCount');
+        this.searchVodsBtn = document.getElementById('searchVodsBtn');
+        this.vodsListCard = document.getElementById('vodsListCard');
+        this.vodsList = document.getElementById('vodsList');
         this.startTime = document.getElementById('startTime');
         this.endTime = document.getElementById('endTime');
         this.downloadSegmentBtn = document.getElementById('downloadSegmentBtn');
@@ -63,44 +68,78 @@ class VideoDownloaderApp {
         // Info elements
         this.videoInfoCard = document.getElementById('videoInfoCard');
         this.videoInfoContent = document.getElementById('videoInfoContent');
+        
+        // CORREÇÃO: Verificar se elementos essenciais existem
+        const essentialElements = [
+            'platformSelect', 'downloadBtn', 'infoBtn', 'videoUrl'
+        ];
+        
+        for (const elementName of essentialElements) {
+            if (!this[elementName]) {
+                console.error(`[ERROR] Elemento essencial não encontrado: ${elementName}`);
+                console.error(`[ERROR] Verifique se o elemento com ID '${elementName}' existe no HTML`);
+            } else {
+                console.log(`[DEBUG] Elemento encontrado: ${elementName}`);
+            }
+        }
     }
     
     bindEvents() {
         // Platform selection
-        this.platformSelect.addEventListener('change', () => this.onPlatformChange());
+        if (this.platformSelect) {
+            this.platformSelect.addEventListener('change', () => this.onPlatformChange());
+        }
         
         // Standard interface events
-        this.validateBtn.addEventListener('click', () => this.validateUrl());
-        this.downloadBtn.addEventListener('click', () => this.downloadVideo());
-        this.infoBtn.addEventListener('click', () => this.getVideoInfo());
+        if (this.validateBtn) {
+            this.validateBtn.addEventListener('click', () => this.validateUrl());
+        }
+        if (this.downloadBtn) {
+            this.downloadBtn.addEventListener('click', () => this.downloadVideo());
+        }
+        if (this.infoBtn) {
+            this.infoBtn.addEventListener('click', () => this.getVideoInfo());
+        }
         
         // X/Twitter interface events
-        this.searchTweetsBtn.addEventListener('click', () => this.searchTweets());
-        this.downloadSegmentBtn.addEventListener('click', () => this.downloadSegment());
+        if (this.searchTweetsBtn) {
+            this.searchTweetsBtn.addEventListener('click', () => this.searchTweets());
+        }
+        if (this.downloadSegmentBtn) {
+            this.downloadSegmentBtn.addEventListener('click', () => this.downloadSegment());
+        }
         
         // Progress events
-        this.downloadFileBtn.addEventListener('click', () => this.downloadFile());
+        if (this.downloadFileBtn) {
+            this.downloadFileBtn.addEventListener('click', () => this.downloadFile());
+        }
         
         // Enter key support
-        this.videoUrl.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.validateUrl();
-        });
+        if (this.videoUrl) {
+            this.videoUrl.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.validateUrl();
+            });
+        }
         
         // Hide video info when URL is cleared
-        this.videoUrl.addEventListener('input', (e) => {
-            if (e.target.value.trim() === '') {
-                this.hideVideoInfo();
-            }
-        });
+        if (this.videoUrl) {
+            this.videoUrl.addEventListener('input', (e) => {
+                if (e.target.value.trim() === '') {
+                    this.hideVideoInfo();
+                }
+            });
+        }
         
-        this.xTwitterUsername.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.searchTweets();
-        });
+        if (this.xTwitterUsername) {
+            this.xTwitterUsername.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.searchTweets();
+            });
+        }
     }
     
     onPlatformChange() {
         const platform = this.platformSelect.value;
-        this.log(`🎯 Plataforma selecionada: ${platform}`);
+        this.log(` Plataforma selecionada: ${platform}`);
         
         // Apply platform theme to body
         this.applyPlatformTheme(platform);
@@ -108,24 +147,24 @@ class VideoDownloaderApp {
         // Update platform indicator
         const indicators = {
             'Instagram': {
-                text: '📷 Instagram: Download no formato original',
+                text: 'Instagram: Download no formato original',
                 class: 'platform-instagram',
-                emoji: '📷'
+                emoji: ''
             },
             'Facebook': {
-                text: '📘 Facebook: Download no formato original',
+                text: 'Facebook: Download no formato original',
                 class: 'platform-facebook',
-                emoji: '📘'
+                emoji: ''
             },
             'TikTok': {
-                text: '🎵 TikTok (requer login): Download no formato original',
+                text: 'TikTok (requer login): Download no formato original',
                 class: 'platform-tiktok',
-                emoji: '🎵'
+                emoji: ''
             },
             'X/Twitter': {
-                text: '🐦 X/Twitter: Download no formato original',
+                text: 'X/Twitter: Download no formato original',
                 class: 'platform-twitter',
-                emoji: '🐦'
+                emoji: ''
             }
         };
         
@@ -141,7 +180,7 @@ class VideoDownloaderApp {
         this.updateOptionsVisibility(platform);
         
         // Log platform theme change
-        this.log(`🎨 Tema ${platform} aplicado`);
+        this.log(` Tema ${platform} aplicado`);
     }
     
     applyPlatformTheme(platform) {
@@ -214,10 +253,10 @@ class VideoDownloaderApp {
         
         const pattern = platformPatterns[platform];
         if (pattern && pattern.test(url)) {
-            this.log(`✅ URL ${platform} válida`);
+            this.log(` URL ${platform} válida`);
             this.showAlert(`URL ${platform} válida`, 'success');
         } else {
-            this.log(`❌ URL não é válida para ${platform}`);
+            this.log(` URL não é válida para ${platform}`);
             this.showAlert(`URL não é válida para ${platform}`, 'danger');
         }
     }
@@ -232,7 +271,7 @@ class VideoDownloaderApp {
         }
         
         this.setButtonLoading(this.infoBtn, true);
-        this.log(`ℹ️ Buscando informações reais do vídeo ${platform}...`);
+        this.log(` Buscando informações reais do vídeo ${platform}...`);
         
         try {
             // Chamar endpoint real do backend com yt-dlp
@@ -258,13 +297,13 @@ class VideoDownloaderApp {
             if (result.success) {
                 // Exibir informações reais do vídeo
                 this.displayRealVideoInfo(result);
-                this.log(`✅ Informações reais obtidas: ${result.title}`);
+                this.log(` Informações reais obtidas: ${result.title}`);
             } else {
-                this.log(`❌ Erro ao obter informações: ${result.error}`);
+                this.log(` Erro ao obter informações: ${result.error}`);
                 this.showAlert(`Erro: ${result.error}`, 'danger');
             }
         } catch (error) {
-            this.log(`❌ Erro de conexão: ${error.message}`);
+            this.log(` Erro de conexão: ${error.message}`);
             this.showAlert(`Erro de conexão: ${error.message}`, 'danger');
         } finally {
             this.setButtonLoading(this.infoBtn, false);
@@ -278,48 +317,53 @@ class VideoDownloaderApp {
         // Formatar duração
         const duration = info.duration ? this.formatDuration(info.duration) : 'N/A';
         
-        // Formatar visualizações
-        const views = info.view_count ? this.formatViews(info.view_count) : 'N/A';
-        
         this.videoInfoContent.innerHTML = `
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <img src="${info.thumbnail || 'https://via.placeholder.com/320x180/333/fff?text=' + info.platform + '+Video'}" 
-                         class="img-fluid rounded shadow-sm" alt="Thumbnail" 
-                         style="border: 2px solid rgba(255,255,255,0.1);">
+                         class="img-fluid rounded shadow-sm" alt="Thumbnail">
                 </div>
                 <div class="col-md-8">
-                    <h5 class="mb-4 text-white fw-bold">${this.getPlatformIcon(info.platform)} ${info.title}</h5>
+                    <h5 class="text-light mb-3">${info.title || 'Título não disponível'}</h5>
                     
-                    <div class="row mb-3">
+                    <div class="row">
                         <div class="col-sm-4"><strong class="text-light">Plataforma:</strong></div>
-                        <div class="col-sm-8"><span class="badge bg-primary fs-6 px-3 py-2">${info.platform}</span></div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-sm-4"><strong class="text-light">Duração:</strong></div>
-                        <div class="col-sm-8"><span class="text-warning fw-bold fs-5">${duration}</span></div>
+                        <div class="col-sm-8"><span class="badge bg-primary fs-6">${info.platform || 'N/A'}</span></div>
                     </div>
                     
                     <div class="row">
-                        <div class="col-sm-4"><strong class="text-light">Estatísticas:</strong></div>
-                        <div class="col-sm-8"><span class="text-success fw-bold">${views}</span></div>
+                        <div class="col-sm-4"><strong class="text-light">Duração:</strong></div>
+                        <div class="col-sm-8"><span class="text-warning fw-bold fs-5">${duration}</span></div>
                     </div>
                 </div>
             </div>
         `;
         
-        this.log(`📋 Informações reais exibidas: ${info.title}`);
+        this.log(` Informações reais exibidas: ${info.title}`);
     }
     
     getPlatformIcon(platform) {
         const icons = {
-            'Instagram': '📷',
-            'Facebook': '📘',
-            'TikTok': '🎵',
-            'X/Twitter': '🐦'
+            'Instagram': '',
+            'Facebook': '',
+            'TikTok': '',
+            'X/Twitter': ''
         };
-        return icons[platform] || '🎬';
+        return icons[platform] || '';
+    }
+    
+    formatDuration(seconds) {
+        // Converter para inteiro para evitar casas decimais
+        const totalSeconds = Math.floor(seconds);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const secs = totalSeconds % 60;
+        
+        if (hours > 0) {
+            return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        } else {
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
     }
     
     formatViews(count) {
@@ -343,6 +387,14 @@ class VideoDownloaderApp {
             return;
         }
         
+        // NOVA LÓGICA: Se for Twitter ou Instagram, usar download direto ultra-simples
+        if (platform === 'X/Twitter' || platform === 'Instagram') {
+            console.log(`[DEBUG] Usando download direto para ${platform}`);
+            await this.downloadDirect(platform);
+            return;
+        }
+        
+        // Lógica original para outras plataformas (Facebook, TikTok)
         this.setButtonLoading(this.downloadBtn, true);
         this.progressCard.style.display = 'block';
         this.updateProgress(0, 'starting');
@@ -359,6 +411,12 @@ class VideoDownloaderApp {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url, platform, quality, format })
             });
+            
+            // CORREÇÃO: Verificar se resposta é JSON válido
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error(`${platform} retornou erro do servidor (HTML em vez de JSON)`);
+            }
             
             const data = await response.json();
             
@@ -410,35 +468,50 @@ class VideoDownloaderApp {
     async searchTweets() {
         // X/Twitter search não implementado no backend atual
         this.showAlert('Funcionalidade X/Twitter em desenvolvimento. Use a interface padrão para URLs diretas.', 'info');
-        this.log('⚠️ X/Twitter search não implementado - use interface padrão');
+        this.log(' X/Twitter search não implementado - use interface padrão');
     }
 
     displayTweets(tweets) {
         // Função mantida para compatibilidade, mas não usada
-        this.log('⚠️ displayTweets não implementado');
+        this.log(' displayTweets não implementado');
     }
 
     selectTweet(index) {
         // Função mantida para compatibilidade, mas não usada
-        this.log('⚠️ selectTweet não implementado');
+        this.log(' selectTweet não implementado');
     }
 
     async downloadSegment() {
         // X/Twitter segment download não implementado no backend atual
         this.showAlert('Funcionalidade X/Twitter em desenvolvimento. Use a interface padrão para URLs diretas.', 'info');
-        this.log('⚠️ X/Twitter segment download não implementado - use interface padrão');
+        this.log(' X/Twitter segment download não implementado - use interface padrão');
     }
 
     downloadFile() {
-        if (this.isVercel && this.downloadFiles && this.downloadFiles.length > 0) {
-            // No Vercel, usar os arquivos da resposta HTTP
-            const file = this.downloadFiles[0]; // Pegar o primeiro arquivo
-            window.open(file.download_url, '_blank');
-            this.log(`📥 Iniciando download: ${file.name}`);
-        } else if (this.currentDownloadId) {
-            // Usar endpoint correto /file/ em vez de /api/download_file/
-            window.open(`/file/${this.currentDownloadId}`, '_blank');
-            this.log('📥 Iniciando download do arquivo');
+        console.log('[DEBUG] Botão "Baixar Arquivo" clicado!');
+        console.log('[DEBUG] currentDownloadId:', this.currentDownloadId);
+        
+        if (this.currentDownloadId) {
+            // Usar endpoint correto /file/ com o download_id
+            const downloadUrl = `/file/${this.currentDownloadId}`;
+            console.log('[DEBUG] URL de download:', downloadUrl);
+            
+            this.log(` Tentando baixar arquivo: ${downloadUrl}`);
+            
+            // Tentar abrir em nova aba
+            const newWindow = window.open(downloadUrl, '_blank');
+            
+            if (newWindow) {
+                this.log(` Nova aba aberta para download: ${downloadUrl}`);
+            } else {
+                this.log(` Falha ao abrir nova aba - popup bloqueado?`);
+                // Fallback: tentar download direto
+                window.location.href = downloadUrl;
+            }
+        } else {
+            console.log('[DEBUG] Erro: currentDownloadId é null/undefined');
+            this.log(' Erro: Nenhum download_id disponível');
+            this.showAlert('Erro: Nenhum arquivo disponível para download', 'danger');
         }
     }
     
@@ -553,20 +626,77 @@ class VideoDownloaderApp {
         // }
     }
     
-    formatDuration(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
-        
-        if (hours > 0) {
-            return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        } else {
-            return `${minutes}:${secs.toString().padStart(2, '0')}`;
-        }
-    }
-    
     hideVideoInfo() {
         this.videoInfoCard.style.display = 'none';
+    }
+    
+    async downloadDirect(platform) {
+        const url = this.videoUrl.value.trim();
+        
+        if (!url) {
+            this.showAlert('Por favor, digite uma URL', 'warning');
+            return;
+        }
+        
+        console.log('[DEBUG] Download direto iniciado');
+        this.setButtonLoading(this.downloadBtn, true);
+        this.log(` Iniciando download direto do ${platform}...`);
+        
+        try {
+            // Fazer requisição POST para o endpoint correto
+            const response = await fetch('/download_direct', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    url: url,
+                    platform: platform 
+                })
+            });
+            
+            console.log('[DEBUG] Response status:', response.status);
+            console.log('[DEBUG] Response headers:', response.headers);
+            
+            if (response.ok) {
+                // Se a resposta for um arquivo, fazer download direto
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('video/')) {
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `${platform}_video_${Date.now()}.mp4`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(downloadUrl);
+                    
+                    this.log(` Download concluído com sucesso!`);
+                    this.showAlert('Download concluído!', 'success');
+                } else {
+                    // Se for JSON, verificar resultado
+                    const data = await response.json();
+                    if (data.success) {
+                        this.log(` Download preparado: ${data.message || 'Sucesso'}`);
+                        this.showAlert('Download iniciado!', 'success');
+                    } else {
+                        this.log(` Erro: ${data.error}`);
+                        this.showAlert(`Erro: ${data.error}`, 'danger');
+                    }
+                }
+            } else {
+                const errorText = await response.text();
+                console.log('[DEBUG] Error response:', errorText);
+                this.log(` Erro HTTP ${response.status}: ${errorText}`);
+                this.showAlert(`Erro HTTP ${response.status}`, 'danger');
+            }
+            
+        } catch (error) {
+            console.log('[DEBUG] Erro no download direto:', error);
+            this.log(` Erro no download direto: ${error.message}`);
+            this.showAlert(`Erro: ${error.message}`, 'danger');
+        } finally {
+            this.setButtonLoading(this.downloadBtn, false);
+        }
     }
 }
 
