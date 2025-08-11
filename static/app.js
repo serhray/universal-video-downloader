@@ -689,6 +689,15 @@ class VideoDownloaderApp {
                             setTimeout(() => {
                                 this.showAlert(' Dica: Instagram funciona perfeitamente no ambiente local devido às limitações de rate limiting em datacenters.', 'info');
                             }, 3000);
+                        } else if (data.error_type === 'tiktok_blocked') {
+                            this.log(` TikTok bloqueado - requer cookies/autenticação`);
+                            this.log(` Dica: ${data.suggestion}`);
+                            this.showAlert(` TikTok: ${data.error}`, 'warning');
+                            
+                            // Mostrar dica adicional específica do TikTok
+                            setTimeout(() => {
+                                this.showAlert(' Dica: TikTok é muito restritivo e requer cookies de navegador autenticado. Considere fazer login no TikTok no navegador primeiro.', 'info');
+                            }, 3000);
                         } else {
                             this.log(` Erro: ${data.error}`);
                             this.showAlert(`Erro: ${data.error}`, 'danger');

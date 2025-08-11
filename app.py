@@ -268,6 +268,15 @@ def download_video():
                         'suggestion': 'Para Instagram, recomendamos usar o aplicativo localmente onde funciona perfeitamente.'
                     })
                 
+                # Detectar erros específicos do TikTok
+                if platform == 'TikTok' and any(keyword in error_msg for keyword in ['unable to extract', 'webpage video data', 'login required', 'cookies', 'blocked']):
+                    return jsonify({
+                        'success': False, 
+                        'error': 'TikTok bloqueou downloads. Limitações conhecidas: necessidade de cookies/autenticação e detecção anti-bot. TikTok é muito restritivo contra downloaders.',
+                        'error_type': 'tiktok_blocked',
+                        'suggestion': 'TikTok requer cookies de navegador autenticado. Funciona melhor em ambiente local com sessão válida.'
+                    })
+                
                 # Erro genérico para outras situações
                 return jsonify({'success': False, 'error': f'Erro no {platform}: {str(e)}'})
             
@@ -422,6 +431,15 @@ def download_direct():
                         'error': 'Instagram bloqueou downloads em ambiente cloud. Limitações conhecidas: rate limiting agressivo e detecção de datacenter. Recomendação: use o ambiente local para Instagram.',
                         'error_type': 'instagram_cloud_blocked',
                         'suggestion': 'Para Instagram, recomendamos usar o aplicativo localmente onde funciona perfeitamente.'
+                    })
+                
+                # Detectar erros específicos do TikTok
+                if platform == 'TikTok' and any(keyword in error_msg for keyword in ['unable to extract', 'webpage video data', 'login required', 'cookies', 'blocked']):
+                    return jsonify({
+                        'success': False, 
+                        'error': 'TikTok bloqueou downloads. Limitações conhecidas: necessidade de cookies/autenticação e detecção anti-bot. TikTok é muito restritivo contra downloaders.',
+                        'error_type': 'tiktok_blocked',
+                        'suggestion': 'TikTok requer cookies de navegador autenticado. Funciona melhor em ambiente local com sessão válida.'
                     })
                 
                 # Erro genérico para outras situações
