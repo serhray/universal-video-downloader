@@ -384,44 +384,31 @@ def download_direct():
             }
         elif platform == 'TikTok':
             ydl_opts = {
-                # Estratégia mais simples similar ao Twitter
-                'format': 'best[height<=720]/best',
+                # FORÇAR H.264 em vez de HEVC para melhor compatibilidade
+                'format': 'best[vcodec^=avc][height<=720]/best[height<=720]/best',
                 'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
                 'quiet': True,
                 'no_warnings': True,
                 'http_headers': {
-                    # User-Agent mais simples e comum
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept': '*/*',
-                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
                     'Accept-Encoding': 'gzip, deflate, br',
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache',
+                    'Referer': 'https://www.tiktok.com/',
                 },
-                # Configurações anti-detecção mais agressivas
-                'extractor_retries': 3,
-                'retries': 5,
-                'fragment_retries': 5,
-                'sleep_interval': 0.5,  # Delay menor
-                'max_sleep_interval': 2,
-                # Bypass geográfico agressivo
+                # Configurações específicas para TikTok
+                'sleep_interval': 1,
+                'retries': 2,
+                'fragment_retries': 2,
+                # Bypass geográfico
                 'geo_bypass': True,
-                'geo_bypass_country': 'US',  # Tentar US em vez de BR
-                'geo_bypass_ip_block': None,
-                # Configurações de extrator específicas
-                'extractor_args': {
-                    'tiktok': {
-                        'webpage_url_basename': 'video',
-                    }
-                },
-                # Ignorar erros de certificado se necessário
-                'nocheckcertificate': True,
-                # Não usar cookies inicialmente (estratégia simples)
-                'cookiefile': None,
-                # Tentar diferentes métodos de extração
-                'extract_flat': False,
-                'writethumbnail': False,
-                'writeinfojson': False,
+                'geo_bypass_country': 'BR',
+                # Forçar re-encoding se necessário para garantir H.264
+                'postprocessors': [{
+                    'key': 'FFmpegVideoConvertor',
+                    'preferedformat': 'mp4',
+                    'preferedcodec': 'libx264',  # Forçar H.264
+                }] if os.path.exists('/usr/bin/ffmpeg') or os.path.exists('/usr/local/bin/ffmpeg') else [],
             }
         
         print(f"[DEBUG] Iniciando yt-dlp para {platform}...")
