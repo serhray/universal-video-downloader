@@ -338,9 +338,25 @@ def download_direct():
                 'no_warnings': True,
                 'http_headers': {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                    'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Referer': 'https://www.instagram.com/',
+                    'Origin': 'https://www.instagram.com',
+                    'Sec-Fetch-Dest': 'document',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-Site': 'same-origin',
+                    'Upgrade-Insecure-Requests': '1',
                 },
-                # Configurações específicas para Instagram
+                # Configurações anti-bloqueio para Instagram
+                'sleep_interval': 2,  # Delay entre requests
+                'max_sleep_interval': 5,
+                'retries': 3,  # Tentar 3 vezes
+                'fragment_retries': 3,
                 'cookiefile': None,  # Instagram pode precisar de cookies no futuro
+                # Bypass geográfico
+                'geo_bypass': True,
+                'geo_bypass_country': 'BR',
             }
         
         print(f"[DEBUG] Iniciando yt-dlp para {platform}...")
