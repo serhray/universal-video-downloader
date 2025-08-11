@@ -679,8 +679,20 @@ class VideoDownloaderApp {
                         this.log(` Download preparado: ${data.message || 'Sucesso'}`);
                         this.showAlert('Download iniciado!', 'success');
                     } else {
-                        this.log(` Erro: ${data.error}`);
-                        this.showAlert(`Erro: ${data.error}`, 'danger');
+                        // Tratamento específico para bloqueio do Instagram no cloud
+                        if (data.error_type === 'instagram_cloud_blocked') {
+                            this.log(` Instagram bloqueado no ambiente cloud`);
+                            this.log(` Dica: ${data.suggestion}`);
+                            this.showAlert(` Instagram Cloud: ${data.error}`, 'warning');
+                            
+                            // Mostrar dica adicional
+                            setTimeout(() => {
+                                this.showAlert(' Dica: Instagram funciona perfeitamente no ambiente local devido às limitações de rate limiting em datacenters.', 'info');
+                            }, 3000);
+                        } else {
+                            this.log(` Erro: ${data.error}`);
+                            this.showAlert(`Erro: ${data.error}`, 'danger');
+                        }
                     }
                 }
             } else {

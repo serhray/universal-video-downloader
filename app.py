@@ -245,16 +245,31 @@ def download_video():
         # Realizar download
         print(f"[DEBUG] Iniciando yt-dlp para {platform}...")
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            print(f"[DEBUG] yt-dlp concluído, info: {type(info)}")
-            
-            # CORREÇÃO: Verificar se info não é None
-            if info is None:
-                print(f"[DEBUG] Erro: info é None para {platform}")
-                return jsonify({
-                    'success': False, 
-                    'error': f'{platform} bloqueou o download. Tente novamente ou use outra URL.'
-                })
+            try:
+                info = ydl.extract_info(url, download=True)
+                
+                if info is None:
+                    print(f"[DEBUG] Erro: yt-dlp retornou None")
+                    return jsonify({
+                        'success': False, 
+                        'error': f'{platform} bloqueou o download ou URL inválida'
+                    })
+                
+            except Exception as e:
+                error_msg = str(e).lower()
+                print(f"[DEBUG] Erro específico do yt-dlp: {str(e)}")
+                
+                # Detectar erros específicos do Instagram
+                if platform == 'Instagram' and any(keyword in error_msg for keyword in ['rate limit', 'login required', 'not available', 'dneb_']):
+                    return jsonify({
+                        'success': False, 
+                        'error': 'Instagram bloqueou downloads em ambiente cloud. Limitações conhecidas: rate limiting agressivo e detecção de datacenter. Recomendação: use o ambiente local para Instagram.',
+                        'error_type': 'instagram_cloud_blocked',
+                        'suggestion': 'Para Instagram, recomendamos usar o aplicativo localmente onde funciona perfeitamente.'
+                    })
+                
+                # Erro genérico para outras situações
+                return jsonify({'success': False, 'error': f'Erro no {platform}: {str(e)}'})
             
             # Encontrar arquivo baixado
             files = os.listdir(download_path)
@@ -361,11 +376,28 @@ def download_direct():
         
         print(f"[DEBUG] Iniciando yt-dlp para {platform}...")
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            
-            if info is None:
-                print(f"[DEBUG] Erro: yt-dlp retornou None")
-                return jsonify({'success': False, 'error': f'{platform} bloqueou o download ou URL inválida'})
+            try:
+                info = ydl.extract_info(url, download=True)
+                
+                if info is None:
+                    print(f"[DEBUG] Erro: yt-dlp retornou None")
+                    return jsonify({'success': False, 'error': f'{platform} bloqueou o download ou URL inválida'})
+                
+            except Exception as e:
+                error_msg = str(e).lower()
+                print(f"[DEBUG] Erro específico do yt-dlp: {str(e)}")
+                
+                # Detectar erros específicos do Instagram
+                if platform == 'Instagram' and any(keyword in error_msg for keyword in ['rate limit', 'login required', 'not available', 'dneb_']):
+                    return jsonify({
+                        'success': False, 
+                        'error': 'Instagram bloqueou downloads em ambiente cloud. Limitações conhecidas: rate limiting agressivo e detecção de datacenter. Recomendação: use o ambiente local para Instagram.',
+                        'error_type': 'instagram_cloud_blocked',
+                        'suggestion': 'Para Instagram, recomendamos usar o aplicativo localmente onde funciona perfeitamente.'
+                    })
+                
+                # Erro genérico para outras situações
+                return jsonify({'success': False, 'error': f'Erro no {platform}: {str(e)}'})
             
             # Encontrar arquivo baixado
             files = os.listdir(temp_dir)
